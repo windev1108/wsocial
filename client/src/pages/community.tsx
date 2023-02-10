@@ -9,7 +9,7 @@ import { GetServerSidePropsContext } from 'next';
 import { authOptions } from './api/auth/[...nextauth]';
 import { useSession } from 'next-auth/react';
 import { useQuery } from '@apollo/client';
-import USER_QUERIES from '@/graphql/queries/user';
+import USER_OPERATIONS from '@/graphql/operations/user';
 import { User } from '@/utils/types';
 import FollowingsItem from '@/components/Shared/Chilren/Followings';
 import NotFriendComponent from '@/components/Shared/Chilren/NotFriend';
@@ -46,7 +46,7 @@ export default function Community() {
     const { data: session } = useSession();
     const [tab, setTab] = useState(1);
     const { data: communityData, loading }: any = useQuery(
-        USER_QUERIES.getMyCommunity,
+        USER_OPERATIONS.Queries.getMyCommunity,
         {
             variables: {
                 id: session?.user.id,

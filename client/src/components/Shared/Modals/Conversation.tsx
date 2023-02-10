@@ -65,18 +65,18 @@ const Conversation: React.FC<{
     },[sender,loadingConversation , loadingSendMessage, isTyping])
 
      useEffect(() => {
-            socket.emit("user-typing", 
+            socket?.emit("user-typing", 
             { sender: {
                 id: session?.user?.id,
             } , receiverId: user.id , isTyping: Boolean(content) })
-     },[content])
+     },[content,socket])
+
 
     const handleScrollToLast = React.useCallback(() => {
         lastMessageRef.current?.scrollIntoView({
             behavior: "auto",
         })
     },[lastMessageRef.current])
-
 
     const handleRemoveConversation = React.useCallback(() => {
         dispatch(removeConversation({ id: user?.id }));

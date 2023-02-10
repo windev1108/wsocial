@@ -13,7 +13,7 @@ import {
     BsInstagram,
 } from 'react-icons/bs';
 import { GiEarthAfricaEurope } from 'react-icons/gi';
-import USER_QUERIES from '@/graphql/queries/user';
+import USER_OPERATIONS from '@/graphql/operations/user';
 import { useSession } from 'next-auth/react';
 import { LoadingComponent } from '../Loading';
 import { toast } from 'react-hot-toast';
@@ -43,7 +43,7 @@ const EditProfile = () => {
         linkedin,
     } = formData;
     const { data: session } = useSession();
-    const { data, loading, refetch } = useQuery(USER_QUERIES.getUserById, {
+    const { data, loading, refetch } = useQuery(USER_OPERATIONS.Queries.getUserById, {
         variables: {
             id: session?.user.id,
         },

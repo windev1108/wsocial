@@ -27,7 +27,7 @@ const Layout = dynamic(() => import('@/components/Layout'), { suspense: true });
 import { unstable_getServerSession as getServerSession } from 'next-auth';
 import { GetServerSidePropsContext, NextPage } from 'next';
 import { authOptions } from '../api/auth/[...nextauth]';
-import USER_QUERIES from '@/graphql/queries/user';
+import USER_OPERATIONS from '@/graphql/operations/user';
 import { useLazyQuery, useMutation, useQuery } from '@apollo/client';
 import {
     Conversation,
@@ -98,7 +98,7 @@ const Profile: NextPage<Props> = ({ profileId }) => {
     const {
         data: user,
         loading,
-    }: any = useQuery(USER_QUERIES.getUserById, {
+    }: any = useQuery(USER_OPERATIONS.Queries.getUserById, {
         variables: { id: profileId },
     });
     const { conversations }: conversationSlice | any = useSelector<RootState>(
