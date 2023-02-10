@@ -3,10 +3,10 @@
     "version": "1.0.0",
     "description": "",
     "type": "module",
-    "main": "index.js",
+    "main": "index.ts",
     "scripts": {
         "dev": "nodemon --exec ts-node src/index.ts",
-        "start": "nodemon ./dist/index.js",
+        "start": "node --exec ts-node src/index.ts",
         "build": "tsc",
         "prod": "npm run build && npm run start",
         "test": "echo \"Error: no test specified\" && exit 1",
