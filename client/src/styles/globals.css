@@ -1,0 +1,40 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+.dot-typing {
+    position: relative;
+    left: -9999px;
+    width: 7px;
+    height: 7px;
+    border-radius: 5px;
+    background-color: #377dff;
+    color: #377dff;
+    box-shadow: 9984px 0 0 0 #377dff, 9999px 0 0 0 #377dff, 10014px 0 0 0 #377dff;
+    animation: dot-typing 1.5s infinite linear;
+  }
+  
+  @keyframes dot-typing {
+    0% {
+      box-shadow: 9984px 0 0 0 #377dff, 9999px 0 0 0 #377dff, 10014px 0 0 0 #377dff;
+    }
+    16.667% {
+      box-shadow: 9984px -10px 0 0 #377dff, 9999px 0 0 0 #377dff, 10014px 0 0 0 #377dff;
+    }
+    33.333% {
+      box-shadow: 9984px 0 0 0 #377dff, 9999px 0 0 0 #377dff, 10014px 0 0 0 #377dff;
+    }
+    50% {
+      box-shadow: 9984px 0 0 0 #377dff, 9999px -10px 0 0 #377dff, 10014px 0 0 0 #377dff;
+    }
+    66.667% {
+      box-shadow: 9984px 0 0 0 #377dff, 9999px 0 0 0 #377dff, 10014px 0 0 0 #377dff;
+    }
+    83.333% {
+      box-shadow: 9984px 0 0 0 #377dff, 9999px 0 0 0 #377dff, 10014px -10px 0 0 #377dff;
+    }
+    100% {
+      box-shadow: 9984px 0 0 0 #377dff, 9999px 0 0 0 #377dff, 10014px 0 0 0 #377dff;
+    }
+  }
