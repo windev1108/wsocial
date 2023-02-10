@@ -158,7 +158,9 @@ const FormReplyComment: NextPage<{
                     </div>
                     {blobPicture &&
                     <div className="flex justify-start w-full">
-                        <img
+                        <Image
+                            width={100}
+                            height={100}
                             className="object-cover max-w-[10rem] h-auto"
                             src={blobPicture}
                             alt=""

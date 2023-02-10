@@ -1,6 +1,6 @@
 import type { NextPage } from "next";
 import Link from "next/link";
-import Meta from "@/components/Shared/Meta";
+import Meta from "@/components/Widget/Meta";
 
 const NotFound: NextPage = () => {
     return (

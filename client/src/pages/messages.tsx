@@ -1,5 +1,5 @@
-import VideoCall from '@/components/Shared/Calling/VideoCall';
-import { LoadingPage } from '@/components/Shared/Loading'
+import VideoCall from '@/components/Widget/Calling/VideoCall';
+import { LoadingPage } from '@/components/Widget/Loading'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import React, { lazy, Suspense, useState } from 'react'
 import dynamic from 'next/dynamic';

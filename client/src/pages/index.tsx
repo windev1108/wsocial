@@ -1,13 +1,12 @@
 
-import Suggestions from '../components/Home/Suggestions'
-import Feed from '../components/Home/Feed'
+import Feed from '@/components/Main/Feed'
 import dynamic from 'next/dynamic'
 import { Suspense } from 'react'
-import { LoadingPage } from '@/components/Shared/Loading'
+import { LoadingPage } from '@/components/Widget/Loading'
 const Layout = dynamic(() => import('@/components/Layout'), { ssr: false })
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import { unstable_getServerSession as getServerSession } from "next-auth";
-import { GetServerSidePropsContext, NextPage } from 'next'
+import { GetServerSidePropsContext } from 'next'
 import { authOptions } from './api/auth/[...nextauth]'
 
 

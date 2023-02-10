@@ -7,6 +7,7 @@ import { NotificationInput, User, createNotificationResponse } from '@/utils/typ
 import { useMutation } from '@apollo/client';
 import { NextPage } from 'next';
 import { useSession } from 'next-auth/react';
+import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-hot-toast';
 import { AiOutlineLoading3Quarters, AiOutlineMessage } from 'react-icons/ai';
@@ -171,7 +172,9 @@ const CardUser: NextPage<Props> = ({ user, isFriend, isMySelf , isFollowing , is
     return (
         <div className="absolute top-[50%] left-[50%] w-[20rem] space-y-2 rounded-lg p-4 z-[100] flex flex-col bg-light shadow-lg border">
             <div className="flex space-x-4">
-                <img
+                <Image
+                    width={100}
+                    height={100}
                     className="object-cover rounded-full w-16 h-16"
                     src={user.image}
                     alt=""

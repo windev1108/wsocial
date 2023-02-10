@@ -6,7 +6,7 @@ import { ImHangouts } from 'react-icons/im';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
-import Skeleton from '../Shared/Skeleton';
+import Skeleton from '@/components/Widget/Skeleton';
 import { AiOutlineBars } from 'react-icons/ai';
 
 const MainHeader: NextPage<{

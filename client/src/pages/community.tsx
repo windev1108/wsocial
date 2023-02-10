@@ -1,7 +1,7 @@
-import { lazy, Suspense, useState } from 'react';
-import { LoadingComponent, LoadingPage } from '@/components/Shared/Loading';
+import {  Suspense, useState } from 'react';
+import { LoadingComponent, LoadingPage } from '@/components/Widget/Loading';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
-import FollowerItem from '@/components/Shared/Chilren/Followers';
+import FollowerItem from '@/components/Widget/Items/Followers';
 import dynamic from 'next/dynamic';
 const Layout = dynamic(() => import('@/components/Layout'), { ssr: true });
 import { unstable_getServerSession as getServerSession } from 'next-auth';
@@ -11,8 +11,8 @@ import { useSession } from 'next-auth/react';
 import { useQuery } from '@apollo/client';
 import USER_OPERATIONS from '@/graphql/operations/user';
 import { User } from '@/utils/types';
-import FollowingsItem from '@/components/Shared/Chilren/Followings';
-import NotFriendComponent from '@/components/Shared/Chilren/NotFriend';
+import FollowingsItem from '@/components/Widget/Items/Followings';
+import NotFriendComponent from '@/components/Widget/Items/NotFriend';
 
 export const getServerSideProps = async ({
     req,

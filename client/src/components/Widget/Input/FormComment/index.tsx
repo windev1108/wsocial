@@ -6,7 +6,6 @@ import {
 } from '@/utils/types';
 import { useMutation } from '@apollo/client';
 import { NextPage } from 'next';
-import { useSession } from 'next-auth/react';
 import React, {
     useRef,
     useEffect,
@@ -17,13 +16,11 @@ import React, {
 } from 'react';
 import { toast } from 'react-hot-toast';
 import {
-    AiOutlineFileGif,
     AiOutlineLoading3Quarters,
     AiOutlineSend,
 } from 'react-icons/ai';
 import { BsImage } from 'react-icons/bs';
-import { FiSmile } from 'react-icons/fi';
-import Comment from '../../Chilren/Comment';
+import Comment from '@/components/Widget/Items/Comment';
 import { uploadMultiple } from '@/utils/constants';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/redux/store';
@@ -162,7 +159,9 @@ const FormComment: NextPage<{
             </div>
             {blobPicture &&
                     <div className="flex justify-start w-full px-10 py-2">
-                        <img
+                        <Image
+                            width={100}
+                            height={100}
                             className="object-cover max-w-[10rem] h-auto"
                             src={blobPicture}
                             alt=""

@@ -6,24 +6,24 @@ import NavBar from './NavLeft';
 import Header from './Header';
 import { Toaster, toast } from 'react-hot-toast';
 import { useRouter } from 'next/router';
-import FormSubmitPost from '../Shared/Modals/FormSubmitPost';
+import FormSubmitPost from '@/components/Widget/Modals/FormSubmitPost';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@/redux/store';
-import UserLiked from '../Shared/Modals/UserLiked';
-import Conversation from '../Shared/Modals/Conversation';
+import UserLiked from '@/components/Widget/Modals/UserLiked';
+import Conversation from '@/components/Widget/Modals/Conversation';
 import { useSession } from 'next-auth/react';
 import { useLazyQuery, useQuery} from '@apollo/client';
 import NOTIFICATION_OPERATIONS from '@/graphql/operations/notifications';
-import ConversationCollapse from '../Shared/Modals/ConversationCollapse';
+import ConversationCollapse from '@/components/Widget/Modals/ConversationCollapse';
 import { User } from '@/utils/types';
 import io, { Socket } from 'socket.io-client'
 import { addConversation } from '@/redux/features/conversationSlice';
 import { setOpenAnswer } from '@/redux/features/streamSlice';
 import { setSession, setSessionUsers } from '@/redux/features/sessionSlice';
 import { setSocket } from '@/redux/features/socketSlice';
-import ToastInfo from '../Shared/Toasts/ToastInfo';
-import { LoadingButton } from '../Shared/Loading';
-const NavBarMobile = lazy(() => import("@/components/Shared/Modals/NavBarMobile"))
+import ToastInfo from '../Widget/Toasts/ToastInfo';
+import { LoadingButton } from '../Widget/Loading';
+const NavBarMobile = lazy(() => import("@/components/Widget/Modals/NavBarMobile"))
 
 
 interface LayoutProps {

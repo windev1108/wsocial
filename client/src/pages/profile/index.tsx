@@ -1,9 +1,8 @@
 import React, { Suspense, useCallback, useEffect, useState } from 'react';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
-import { BiSave, BiUser } from 'react-icons/bi';
+import {  BiUser } from 'react-icons/bi';
 import {
     FaBirthdayCake,
-    FaHome,
     FaUserCheck,
     FaUserTimes,
 } from 'react-icons/fa';
@@ -16,12 +15,11 @@ import {
 import { GoHome } from 'react-icons/go';
 import { TbUserSearch } from 'react-icons/tb';
 import { SlUserFollowing } from 'react-icons/sl';
-import { BsFacebook, BsInstagram } from 'react-icons/bs';
+import { BsCameraVideo, BsFacebook, BsInstagram } from 'react-icons/bs';
 import Link from 'next/link';
 import { IoLogoTwitter } from 'react-icons/io';
-import PostSubmit from '@/components/Home/FormPost';
-import Post from '@/components/Shared/Chilren/Post';
-import { LoadingComponent, LoadingPage } from '@/components/Shared/Loading';
+import Post from '@/components/Widget/Items/Post';
+import { LoadingComponent, LoadingPage } from '@/components/Widget/Loading';
 import dynamic from 'next/dynamic';
 const Layout = dynamic(() => import('@/components/Layout'), { suspense: true });
 import { unstable_getServerSession as getServerSession } from 'next-auth';
@@ -43,10 +41,10 @@ import USER_MUTATIONS from '@/graphql/operations/user';
 import { toast } from 'react-hot-toast';
 import { useSession } from 'next-auth/react';
 import { MdPersonAddAlt1 } from 'react-icons/md';
-import CardUser from '@/components/Shared/Cards/CardUser';
+import CardUser from '@/components/Widget/Cards/CardUser';
 import NOTIFICATION_OPERATIONS from '@/graphql/operations/notifications';
 import { GiEarthAfricaEurope } from 'react-icons/gi';
-import { HiUserRemove } from 'react-icons/hi';
+import { HiOutlinePhotograph, HiUserRemove } from 'react-icons/hi';
 import { RiUserFollowFill, RiUserUnfollowFill } from 'react-icons/ri';
 import POST_OPERATIONS from '@/graphql/operations/post';
 import { useDispatch, useSelector } from 'react-redux';
@@ -57,7 +55,8 @@ import {
 } from '@/redux/features/conversationSlice';
 import { RootState } from '@/redux/store';
 import Image from 'next/image';
-import io,{ Socket } from 'socket.io-client';
+import { FiSmile } from 'react-icons/fi';
+import { useTranslation } from 'react-i18next';
 
 export const getServerSideProps = async ({
     req,
@@ -95,6 +94,7 @@ interface Props {
 const Profile: NextPage<Props> = ({ profileId }) => {
     const dispatch = useDispatch();
     const { data: session } = useSession();
+    const { t } = useTranslation();
     const {
         data: user,
         loading,
@@ -817,7 +817,51 @@ const Profile: NextPage<Props> = ({ profileId }) => {
                                 </div>
                             </div>
                             <div className="lg:col-span-6 col-span-12 space-y-6 lg:!mx-6 lg:my-0 my-6 !mx-0">
-                                <PostSubmit />
+                            <div className="bg-light flex-col gap-2 p-4 border-[1px] border-gray-200 shadow-sm rounded-lg">
+            <div className="flex space-x-4 items-center">
+                {!user?.image ?
+              <div  className="w-10 h-10 rounded-full bg-secondary">
+              </div>    
+            :
+                <Image
+                    width={100}
+                    height={100}
+                    className="object-cover w-10 h-10  rounded-full"
+                    src={user?.image}
+                    alt=""
+                />
+            }
+                <div className="flex-1">
+                    <div
+                        onClick={() =>
+                            dispatch(
+                                setOpenFormSubmitPost({
+                                    isOpen: true,
+                                })
+                            )
+                        }
+                        className="bg-secondary cursor-pointer hover:bg-gray-200 duration-300 transition-all outline-none p-3 text-text rounded-lg w-full">
+                        <span>What's happening</span>
+                    </div>
+                </div>
+            </div>
+            <div className="grid grid-cols-3 gap-2 p-2">
+                <div className="py-2 hover:bg-gray-300 border cursor-pointer justify-center rounded-lg shadow-sm flex items-center space-x-2">
+                    <HiOutlinePhotograph className="text-dark" />
+                    <span className="lg:text-base text-sm text-dark">{`${t('common:photo')}/${t(
+                        'common:video'
+                    )}`}</span>
+                </div>
+                <div className="py-2 hover:bg-gray-300 border cursor-pointer text-dark justify-center rounded-lg shadow-sm flex items-center space-x-2">
+                    <FiSmile />
+                    <span className="lg:text-base text-sm">{`${t('common:felling')}`}</span>
+                </div>
+                <div className="py-2 hover:bg-gray-300 border cursor-pointer text-dark justify-center rounded-lg shadow-sm flex items-center space-x-2">
+                    <BsCameraVideo />
+                    <span className="lg:text-base text-sm whitespace-nowrap">{t('common:live_video')}</span>
+                </div>
+            </div>
+        </div>
                                 <div className="relative flex-col space-y-6">
                                     {loadingPost ? (
                                         <LoadingComponent />

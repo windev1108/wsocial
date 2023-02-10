@@ -1,23 +1,18 @@
-import React, { lazy, Suspense } from 'react';
+import React, { Suspense } from 'react';
 import dynamic from 'next/dynamic';
-import { LoadingComponent, LoadingPage } from '@/components/Shared/Loading';
+import { LoadingComponent, LoadingPage } from '@/components/Widget/Loading';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
-import { RiUserAddFill, RiUserSearchFill } from 'react-icons/ri';
-import { IoIosShareAlt } from 'react-icons/io';
-import { BsNewspaper } from 'react-icons/bs';
-const Layout = dynamic(() => import('@/components/Layout'), { suspense: true });
 import { unstable_getServerSession as getServerSession } from 'next-auth';
 import { GetServerSidePropsContext } from 'next';
 import { authOptions } from './api/auth/[...nextauth]';
-import { useMutation, useQuery } from '@apollo/client';
+import {  useQuery } from '@apollo/client';
 import { useSession } from 'next-auth/react';
 import { Notification as NotificationModel } from '@/utils/types';
-import moment from 'moment';
-import { toast } from 'react-hot-toast';
 import NOTIFICATION_OPERATIONS from '@/graphql/operations/notifications';
+const Layout = dynamic(() => import('@/components/Layout'), { suspense: true });
 import NotificationEmpty from '../assets/images/notification.png';
 import Image from 'next/image';
-import Notification from '@/components/Shared/Chilren/Notification';
+import Notification from '@/components/Widget/Items/Notification';
 
 export const getServerSideProps = async ({
     req,

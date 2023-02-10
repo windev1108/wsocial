@@ -1,12 +1,11 @@
 import React from 'react'
 import { BsSearch, BsThreeDots } from 'react-icons/bs'
-import { AiOutlinePlus } from 'react-icons/ai';
 import { NextPage } from 'next';
 import { useQuery } from '@apollo/client';
 import USER_OPERATIONS from '@/graphql/operations/user';
 import { Session } from 'next-auth';
 import { SocketUser, User } from '@/utils/types';
-import ChatUser from '@/components/Shared/Chilren/ChatUser';
+import ChatUser from '@/components/Widget/Items/ChatUser';
 
 
 

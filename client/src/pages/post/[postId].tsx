@@ -1,14 +1,15 @@
-import FormComment from '@/components/Shared/Input/FormComment';
-import { LoadingComponent } from '@/components/Shared/Loading';
-import Skeleton from '@/components/Shared/Skeleton';
+import FormComment from '@/components/Widget/Input/FormComment';
+import { LoadingComponent } from '@/components/Widget/Loading';
+import Skeleton from '@/components/Widget/Skeleton';
 import POST_OPERATIONS from '@/graphql/operations/post';
 import { setShowLikers } from '@/redux/features/isSlice';
 import { formatFirstUppercase } from '@/utils/constants';
 import { File, Post, User } from '@/utils/types';
-import { useMutation, useQuery, useLazyQuery } from '@apollo/client';
+import { useMutation, useLazyQuery } from '@apollo/client';
 import moment from 'moment';
 import { NextPage } from 'next';
 import { useSession } from 'next-auth/react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import React, {
@@ -155,7 +156,9 @@ const PostDetail: NextPage<{
                            autoPlay
                            controls></video>
                    ) : (
-                       <img
+                       <Image 
+                           width={500}
+                           height={500}
                            src={post?.getPostById.files[index!]?.url}
                            className="object-contain h-full w-full"
                            alt=""
@@ -180,7 +183,9 @@ const PostDetail: NextPage<{
                         <Skeleton width={40} height={40} rounded={50} />
                     ) : (
                         <Link href={`/profile?id=${post?.getPostById.author?.id}`}>
-                            <img
+                            <Image
+                                width={500}
+                                height={500}
                                 className="cursor-pointer object-cover w-10 h-10 rounded-full"
                                 src={post?.getPostById.author?.image}
                                 alt=""
@@ -240,7 +245,7 @@ const PostDetail: NextPage<{
                         <Skeleton width={100} height={18} rounded={10} />
                     ) : (
                         <span className="text-dark">
-                            {post?.getPostById?.content || post?.getPostById.postSharedOf?.content || ""}
+                            {post?.getPostById?.content || post?.getPostById.postWidgetOf?.content || ""}
                         </span>
                     )}
                 </div>
@@ -271,7 +276,9 @@ const PostDetail: NextPage<{
                                             <div
                                                 key={user.id}
                                                 className={`border-light z-[${index}]  w-8 h-8 border-[3px]  rounded-full overflow-hidden`}>
-                                                <img
+                                                <Image
+                                                    width={500}
+                                                    height={500}
                                                     className="object-cover w-full h-full"
                                                     src={user.image}
                                                     alt=""
@@ -285,7 +292,9 @@ const PostDetail: NextPage<{
                                                 }] -translate-x-${
                                                     index * 3
                                                 } w-8 h-8 border-[3px] rounded-full overflow-hidden`}>
-                                                <img
+                                                <Image
+                                                    width={500}
+                                                    height={500}
                                                     className={`object-cover w-full h-full`}
                                                     src={user.image}
                                                     alt=""
@@ -310,10 +319,10 @@ const PostDetail: NextPage<{
                         ) : (
                             <span>{`${post?.getPostById._count.comments} Comments`}</span>
                         )}
-                        {post?.getPostById._count.postShared === undefined ? (
+                        {post?.getPostById._count.postWidget === undefined ? (
                             <Skeleton width={100} height={20} rounded={10} />
                         ) : (
-                            <span>{`${post?.getPostById._count.postShared} Shares`}</span>
+                            <span>{`${post?.getPostById._count.postWidget} Shares`}</span>
                         )}
                     </div>
                 </div>

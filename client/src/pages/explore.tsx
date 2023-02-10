@@ -1,5 +1,5 @@
-import ExploreCard from '@/components/Home/ExploreCard';
-import { LoadingPage } from '@/components/Shared/Loading'
+import ExploreCard from '@/components/Widget/Items/ExploreCard';
+import { LoadingPage } from '@/components/Widget/Loading'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import dynamic from 'next/dynamic';
 import React, { lazy, Suspense } from 'react'

@@ -1,15 +1,15 @@
-import React, { lazy, Suspense, useState } from 'react';
+import React, { Suspense, useState } from 'react';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
-import { LoadingPage } from '@/components/Shared/Loading';
-import NavSetting from '@/components/Shared/Settings/NavSetting';
+import { LoadingPage } from '@/components/Widget/Loading';
+import NavSetting from '@/components/Widget/Settings/NavSetting';
 import dynamic from 'next/dynamic';
 const Layout = dynamic(() => import('@/components/Layout'), { suspense: true });
 const EditProfile = dynamic(
-    () => import('@/components/Shared/Settings/Profile'),
+    () => import('@/components/Widget/Settings/Profile'),
     { suspense: true }
 );
 const EditLanguage = dynamic(
-    () => import('@/components/Shared/Settings/Language'),
+    () => import('@/components/Widget/Settings/Language'),
     { suspense: true }
 );
 import { unstable_getServerSession as getServerSession } from 'next-auth';
