@@ -23,6 +23,8 @@ import { uploadMultiple } from '@/utils/constants';
 import Image from 'next/image';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/redux/store';
+import { useTranslation } from 'react-i18next';
+import { useRouter } from 'next/router';
 
 const FormReplyComment: NextPage<{
     parentId: string;
@@ -42,6 +44,8 @@ const FormReplyComment: NextPage<{
         file: {},
         isReplyTo: true,
     });
+    const { t } = useTranslation()
+    const router = useRouter()
     const { content, blobPicture, file, isReplyTo } = state;
     const [createComment, { loading: loadingCreateComment }] = useMutation<
         createCommentResponse,
@@ -59,7 +63,7 @@ const FormReplyComment: NextPage<{
             e.preventDefault();
             try {
                 if (!content) {
-                    toast.error('Please enter comment content');
+                    toast.error(router.locale === "vi" ? "Vui lòng nhập nội dung bình luận" : "Please enter comment content");
                     return;
                 }
 
@@ -96,7 +100,7 @@ const FormReplyComment: NextPage<{
                 }
 
                 setState({ ...state, content: '', blobPicture: '', file: {} });
-                toast.success('Comment post success');
+                toast.success(`${router.locale === 'vi' ? "Bình luận thành công" : "Comment success" }`);
             } catch (error: any) {
                 toast.error(error.message);
             }
@@ -144,7 +148,7 @@ const FormReplyComment: NextPage<{
                             className="flex-1 p-2 bg-transparent outline-none lg:text-base text-sm"
                             type="text"
                             disabled={loadingCreateComment}
-                            placeholder={`Replying to ${authorName} `}
+                            placeholder={`${t('common:replying_to')} ${authorName} `}
                             value={content}
                             onKeyDown={handleChangeInput}
                             onChange={(e) => setState({...state, content: e.target.value})}

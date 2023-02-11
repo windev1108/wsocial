@@ -10,6 +10,7 @@ import Link from 'next/link';
 import React from 'react';
 import { toast } from 'react-hot-toast';
 import {
+    AiFillDelete,
     AiFillHeart,
     AiOutlineLoading3Quarters,
 } from 'react-icons/ai';
@@ -167,7 +168,7 @@ const Notification: NextPage<{
                 </div>
 
                 <div className="flex flex-col">
-                    <div className="flex space-x-2">
+                    <div className="flex space-x-2 lg:text-base text-sm">
                         <span className="font-semibold inline">
                             {fromUsers
                                 .slice(0, 3)
@@ -176,7 +177,7 @@ const Notification: NextPage<{
                                     <Link
                                         href={`/profile?id=${user.id}`}
                                         key={user.id}
-                                        className="inline hover:underline">
+                                        className="inline hover:underline lg:text-base text-sm whitespace-nowrap">
                                         {index !== 0
                                             ? `,${user.name}`
                                             : `${user.name}`}
@@ -249,7 +250,7 @@ const Notification: NextPage<{
                             </span>
                         )}
                     </div>
-                    <span className="text-gray-400">
+                    <span className="text-gray-400 lg:text-base text-xs">
                         {moment(updatedAt as string, 'x').fromNow()}
                     </span>
                 </div>
@@ -274,13 +275,13 @@ const Notification: NextPage<{
                 {loadingDeleteNotification ? (
                     <button className="flex justify-center space-x-2 items-center font-semibold text-sm hover:bg-gray-300 px-4 py-2 bg-gray-200 text-dark rounded-lg cursor-not-allowed">
                         <AiOutlineLoading3Quarters className="animate-spin transition-all duration-500 ease-linear" />
-                        <span>Delete</span>
+                        <AiFillDelete className="lg:text-lg text-sm text-red-400"  />
                     </button>
                 ) : (
                     <button
                         onClick={() => handleDeleteNotification(id)}
-                        className="font-semibold text-sm hover:bg-gray-300 px-4 py-2 bg-gray-200 text-dark rounded-lg">
-                        Delete
+                        className="font-semibold lg:text-lg text-sm text-red-400 hover:opacity-70 p p-2 bg-gray-200 shadow-md rounded-lg">
+                        <AiFillDelete />
                     </button>
                 )}
             </div>

@@ -20,6 +20,7 @@ import { toast } from 'react-hot-toast';
 import USER_MUTATIONS from '@/graphql/operations/user';
 import { IoLogoTwitter } from 'react-icons/io';
 import moment from 'moment';
+import { useTranslation } from 'react-i18next';
 
 const EditProfile = () => {
     const [state, setState] = useState<any>({
@@ -51,7 +52,7 @@ const EditProfile = () => {
     const [updateUser, { loading: loadingUpdate }] = useMutation(
         USER_MUTATIONS.Mutations.updateUser
     );
-
+    const { t } = useTranslation()
     useMemo(() => {
         setState({
             ...state,
@@ -102,45 +103,48 @@ const EditProfile = () => {
                 <div className="p-6 space-y-3  overflow-y-scroll scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 overflow-x-hidden lg:h-full h-[70%]">
                     <div className="flex items-center space-x-2">
                         <AiOutlineTool size={20} className="text-primary" />
-                        <h1 className="lg:text-lg text-base font-bold text-dark">
-                            Edit Profile
+                        <h1 className="lg:text-lg text-base font-bold text-dark first-letter:uppercase lowercase">
+                            {`${t('common:edit')} ${t('common:profile')}`}
                         </h1>
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                         <div className="flex flex-col space-y-2">
-                            <span className="font-semibold lg:text-base text-sm">Full Name</span>
+                            <span className="font-semibold lg:text-base text-sm">{t('common:fullname')}</span>
                             <input
-                                value={name || data?.getUserById.name}
+                                defaultValue={data?.getUserById?.name}
+                                value={name}
                                 onChange={(e) =>
                                     setFormData({
                                         ...formData,
                                         name: e.target.value,
                                     })
                                 }
-                                className="outline-none border-[1px] border-gray-300 px-4 py-2 rounded-lg lg:text-base text-sm"
+                                className="placeholder:first-letter:uppercase placeholder:lowercase outline-none border-[1px] border-gray-300 px-4 py-2 rounded-lg lg:text-base text-sm"
                                 type="text"
-                                placeholder="Enter full name"
+                                placeholder={`${t("common:enter")} ${t("common:fullname")}`}
                             />
                         </div>
                         <div className="flex flex-col space-y-2">
-                            <span className="font-semibold lg:text-base text-sm">Nickname</span>
+                            <span className="font-semibold lg:text-base text-sm">{t("common:nickname")}</span>
                             <input
-                                value={nickname || data?.getUserById.nickname}
+                                defaultValue={data?.getUserById?.nickname}
+                                value={nickname}
                                 onChange={(e) =>
                                     setFormData({
                                         ...formData,
                                         nickname: e.target.value,
                                     })
                                 }
-                                className="outline-none border-[1px] border-gray-300 px-4 py-2 rounded-lg lg:text-base text-sm"
+                                className="placeholder:lowercase outline-none border-[1px] border-gray-300 px-4 py-2 rounded-lg lg:text-base text-sm"
                                 type="text"
-                                placeholder="Enter your nickname"
+                                placeholder={`${t('common:enter')} ${t('common:nickname')}`}
                             />
                         </div>
                         <div className="flex flex-col space-y-2 lg:text-base text-sm">
                             <span className="font-semibold">Email</span>
                             <input
-                                value={email || data?.getUserById.email}
+                                defaultValue={data?.getUserById?.email}
+                                value={email}
                                 onChange={(e) =>
                                     setFormData({
                                         ...formData,
@@ -153,15 +157,13 @@ const EditProfile = () => {
                             />
                         </div>
                         <div className="flex flex-col space-y-2 lg:text-base text-sm">
-                            <span className="font-semibold">Birthday</span>
+                            <span className="font-semibold first-letter:uppercase">{t('common:birth_day')}</span>
                             <input
-                                value={
-                                    birthday ||
-                                    moment(
-                                        data?.getUserById.birthday,
-                                        'x'
-                                    ).format('YYYY-MM-DD')
-                                }
+                                defaultValue={moment(
+                                    data?.getUserById.birthday,
+                                    'x'
+                                ).format('YYYY-MM-DD')}
+                                value={birthday}
                                 onChange={(e) =>
                                     setFormData({
                                         ...formData,
@@ -174,7 +176,7 @@ const EditProfile = () => {
                         </div>
 
                         <div className="flex flex-col space-y-2 lg:text-base text-sm">
-                            <span className="font-semibold">Gender</span>
+                            <span className="font-semibold first-letter:uppercase">{t('common:gender')}</span>
                             <div className="grid grid-cols-3 order-[1px] w-full border-gray-300  border-[1px] rounded-lg ">
                                 <div
                                     onClick={() =>
@@ -190,7 +192,7 @@ const EditProfile = () => {
                                             : 'bg-light text-dark'
                                     } flex items-center justify-center space-x-2 rounded-l-lg cursor-pointer  text-center px-4 py-2`}>
                                     <BsGenderMale />
-                                    <span className="font-semibold lg:block hidden">Male</span>
+                                    <span className="font-semibold lg:block hidden">{t('common:male')}</span>
                                 </div>
                                 <div
                                     onClick={() =>
@@ -207,7 +209,7 @@ const EditProfile = () => {
                                     } flex items-center justify-center space-x-2 cursor-pointer  text-center px-4 py-2 border-x-[1px]`}>
                                     <BsGenderFemale />
                                     <span className="font-semibold lg:block hidden">
-                                        Female
+                                      {t('common:female')}
                                     </span>
                                 </div>
                                 <div
@@ -222,14 +224,14 @@ const EditProfile = () => {
                                         data?.getUserById.gender === 'OTHER'
                                             ? 'bg-primary text-light'
                                             : 'bg-light text-dark'
-                                    } flex items-center justify-center  space-x-2 rounded-r-lg cursor-pointer  text-center px-4 py-2`}>
+                                    } first-letter:uppercase lowercase flex items-center justify-center  space-x-2 rounded-r-lg cursor-pointer  text-center px-4 py-2`}>
                                     <BsGenderAmbiguous />
-                                    <span className="font-semibold lg:block hidden">Other</span>
+                                    <span className="font-semibold lg:block hidden first-letter:uppercase">{t('common:other')}</span>
                                 </div>
                             </div>
                         </div>
                         <div className="flex flex-col space-y-2 lg:text-base text-sm">
-                            <span className="font-semibold">Phone Number</span>
+                            <span className="font-semibold first-letter:uppercase">{t('common:phone_number')}</span>
                             <div className="flex border-[1px]  border-gray-300  rounded-lg">
                                 <select
                                     onChange={(e) =>
@@ -239,61 +241,57 @@ const EditProfile = () => {
                                         })
                                     }
                                     className="px-2 text-center border-r-[1px] border-gray-300 outline-none"
-                                    value={
-                                        phoneCountry ||
-                                        data?.getUserById.phone?.slice(0, 2)
-                                    }
-                                    name=""
-                                    id="">
+                                    defaultValue={data?.getUserById.phone?.slice(0, 2)}
+                                    value={phoneCountry}>
                                     <option className="outline-none border-none" value="1">+1</option>
                                     <option className="outline-none border-none" value="84">+84</option>
                                 </select>
                                 <input
-                                    value={
-                                        phone ||
-                                        data?.getUserById.phone?.slice(2)
-                                    }
+                                defaultValue={data?.getUserById.phone?.slice(2)}
+                                    value={phone}
                                     onChange={(e) =>
                                         setFormData({
                                             ...formData,
                                             phone: e.target.value,
                                         })
                                     }
-                                    className="py-2 w-full outline-none px-4"
+                                    className="placeholder:first-letter:!uppercase py-2 w-full outline-none px-4"
                                     type="text"
-                                    placeholder="Enter your phone"
-                                />
+                                    placeholder={`${t('common:enter')} ${t('common:phone_number')}`}
+                                  />
                             </div>
                         </div>
                         <div className="flex flex-col space-y-2 lg:text-base text-sm">
-                            <span className="font-semibold">Website</span>
+                            <span className="font-semibold first-letter:uppercase">{t('common:website')}</span>
                             <input
-                                value={website || data?.getUserById.website}
+                                defaultValue={data?.getUserById.website}
+                                value={website}
                                 onChange={(e) =>
                                     setFormData({
                                         ...formData,
                                         website: e.target.value,
                                     })
                                 }
-                                className="outline-none border-[1px] border-gray-300 px-4 py-2 rounded-lg"
+                                className="placeholder:first-letter:!uppercase outline-none border-[1px] border-gray-300 px-4 py-2 rounded-lg"
                                 type="text"
-                                placeholder="Enter your website"
+                                placeholder={`${t('common:enter')} ${t('common:website')}`}
                             />
                         </div>
 
                         <div className="flex flex-col space-y-2 lg:text-base text-sm">
-                            <span className="font-semibold">Living at</span>
+                            <span className="font-semibold first-letter:uppercase">{t('common:living_at')}</span>
                             <input
-                                value={liveAt || data?.getUserById.liveAt}
+                                defaultValue={data?.getUserById.liveAt}
+                                value={liveAt}
                                 onChange={(e) =>
                                     setFormData({
                                         ...formData,
                                         liveAt: e.target.value,
                                     })
                                 }
-                                className="outline-none border-[1px] border-gray-300 px-4 py-2 rounded-lg"
+                                className="placeholder:first-letter:!uppercase outline-none border-[1px] border-gray-300 px-4 py-2 rounded-lg"
                                 type="text"
-                                placeholder="Enter your liveAt"
+                                placeholder={`${t('common:enter')} ${t('common:living_at')}`}
                             />
                         </div>
 
@@ -302,8 +300,8 @@ const EditProfile = () => {
                                 size={20}
                                 className="text-primary"
                             />
-                            <span className="font-bold text-dark lg:text-lg text-base">
-                                Social link
+                            <span className="font-bold text-dark lg:text-lg text-base first-letter:uppercase">
+                                {t('common:social_link')}
                             </span>
                         </div>
 
@@ -313,16 +311,17 @@ const EditProfile = () => {
                                 <span className="font-semibold">Facebook</span>
                             </div>
                             <input
-                                value={facebook || data?.getUserById.facebook}
+                                defaultValue={data?.getUserById.facebook}
+                                value={facebook}
                                 onChange={(e) =>
                                     setFormData({
                                         ...formData,
                                         facebook: e.target.value,
                                     })
                                 }
-                                className="outline-none border-[1px] border-gray-300 px-4 py-2 rounded-lg"
+                                className="placeholder:first-letter:!uppercase outline-none border-[1px] border-gray-300 px-4 py-2 rounded-lg"
                                 type="text"
-                                placeholder="Enter your social link"
+                                placeholder={`${t('common:enter')} Facebook`}
                             />
                         </div>
 
@@ -332,16 +331,17 @@ const EditProfile = () => {
                                 <span className="font-semibold">Twitter</span>
                             </div>
                             <input
-                                value={twitter || data?.getUserById.twitter}
+                                defaultValue={data?.getUserById.twitter}
+                                value={twitter}
                                 onChange={(e) =>
                                     setFormData({
                                         ...formData,
                                         twitter: e.target.value,
                                     })
                                 }
-                                className="outline-none border-[1px] border-gray-300 px-4 py-2 rounded-lg"
+                                className="placeholder:first-letter:!uppercase outline-none border-[1px] border-gray-300 px-4 py-2 rounded-lg"
                                 type="text"
-                                placeholder="Enter your social link"
+                                placeholder={`${t('common:enter')} Twitter`}
                             />
                         </div>
 
@@ -351,16 +351,17 @@ const EditProfile = () => {
                                 <span className="font-semibold">Instagram</span>
                             </div>
                             <input
-                                value={instagram || data?.getUserById.instagram}
+                                defaultValue={data?.getUserById.instagram}
+                                value={instagram}
                                 onChange={(e) =>
                                     setFormData({
                                         ...formData,
                                         instagram: e.target.value,
                                     })
                                 }
-                                className="outline-none border-[1px] border-gray-300 px-4 py-2 rounded-lg"
+                                className="placeholder:first-letter:!uppercase outline-none border-[1px] border-gray-300 px-4 py-2 rounded-lg"
                                 type="text"
-                                placeholder="Enter your social link"
+                                placeholder={`${t('common:enter')} Instagram`}
                             />
                         </div>
 
@@ -370,16 +371,17 @@ const EditProfile = () => {
                                 <span className="font-semibold">LinkedIn</span>
                             </div>
                             <input
-                                value={linkedin || data?.getUserById.linkedin}
+                                defaultValue={data?.getUserById.linkedin}
+                                value={linkedin}
                                 onChange={(e) =>
                                     setFormData({
                                         ...formData,
                                         linkedin: e.target.value,
                                     })
                                 }
-                                className="outline-none border-[1px] border-gray-300 px-4 py-2 rounded-lg"
+                                className="placeholder:first-letter:!uppercase outline-none border-[1px] border-gray-300 px-4 py-2 rounded-lg "
                                 type="text"
-                                placeholder="Enter your social link"
+                                placeholder={`${t('common:enter')} LinkedIn`}
                             />
                         </div>
 
@@ -390,11 +392,11 @@ const EditProfile = () => {
                                 className={`${
                                     !isChangeData &&
                                     'cursor-not-allowed bg-opacity-50'
-                                } rounded-lg px-4 py-1 text-light bg-primary`}>
+                                } rounded-lg px-4 py-1 text-light bg-primary first-letter:uppercase`}>
                                 {loadingUpdate ? (
                                     <AiOutlineLoading3Quarters className="animate-spin duration-500 mx-4 my-1 ease-linear transition-all" />
                                 ) : (
-                                    'Submit'
+                                    t('common:submit')
                                 )}
                             </button>
                         </div>

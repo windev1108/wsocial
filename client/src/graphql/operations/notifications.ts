@@ -8,6 +8,15 @@ const NOTIFICATION_OPERATIONS = {
                     id
                     name
                     image
+                    friends {
+                        id
+                        name
+                        image
+                        liveAt
+                        friends {
+                            id
+                        }
+                    }
                     notificationsTo {
                         id
                         type

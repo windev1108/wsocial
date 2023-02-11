@@ -22,6 +22,7 @@ import { setShowLikers } from '@/redux/features/isSlice';
 import Link from 'next/link';
 import Image from 'next/image';
 import { destroySingle } from '@/utils/constants';
+import { useTranslation } from 'react-i18next';
 
 const Comment: NextPage<{
     id: string;
@@ -47,6 +48,7 @@ const Comment: NextPage<{
     childComment,
 }) => {
     const dispatch = useDispatch();
+    const { t } = useTranslation()
     const [state, setState] = useState({
         openOptionComment: false,
         isOpenFormReply: false,
@@ -142,8 +144,8 @@ const Comment: NextPage<{
                                 onClick={handleToggleLikeComment}
                                 className={`${
                                     isLiked ? 'text-primary' : 'text-dark'
-                                } hover:underline lg:text-sm text-xs font-semibold`}>
-                                Like
+                                } first-letter:uppercase whitespace-nowrap hover:underline lg:text-sm text-xs font-semibold`}>
+                                {t('common:like')}
                             </button>
                         )}
                         <button
@@ -155,8 +157,8 @@ const Comment: NextPage<{
                             }
                             className={`${
                                 isOpenFormReply ? 'text-primary' : 'text-dark'
-                            } hover:underline lg:text-sm text-xs font-semibold`}>
-                            Reply
+                            } first-letter:uppercase whitespace-nowrap hover:underline lg:text-sm text-xs font-semibold`}>
+                            {t('common:reply')}
                         </button>
                         <span className="hover:underline lg:text-sm text-xs">
                             {' '}
@@ -164,7 +166,7 @@ const Comment: NextPage<{
                         </span>
                         {createdAt !== updatedAt && (
                             <span className="hover:underline text-sm">
-                                Edited
+                                {t('common:edited')}
                             </span>
                         )}
                     </div>
@@ -217,7 +219,7 @@ const Comment: NextPage<{
                             }
                             className="flex items-centers space-x-2 cursor-pointer hover:underline">
                             <HiReply className="rotate-[180deg]" />
-                            <span className="text-sm font-semibold">{`${childComment.length} Reply`}</span>
+                            <span className="text-sm font-semibold">{`${childComment.length} ${t('common:reply')}`}</span>
                         </button>
                     ))}
 
@@ -245,7 +247,7 @@ const Comment: NextPage<{
                             {loadingDeleteComment && (
                                 <AiOutlineLoading3Quarters className="animate-spin transition-all duration-500 ease-linear text-primary" />
                             )}
-                            <span>Delete comment</span>
+                            <span className="lowercase first-letter:uppercase">{`${t('common:delete')} ${t('common:comment')}`}</span>
                         </button>
 
                         {/* <button className="whitespace-nowrap text-dark font-semibold hover:bg-gray-200 p-4 w-full bg-secondary">

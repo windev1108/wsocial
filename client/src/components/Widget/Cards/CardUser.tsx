@@ -10,6 +10,7 @@ import { useSession } from 'next-auth/react';
 import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
 import { AiOutlineLoading3Quarters, AiOutlineMessage } from 'react-icons/ai';
 import { FaUserCheck, FaUserFriends } from 'react-icons/fa';
 import { HiUserRemove } from 'react-icons/hi';
@@ -33,6 +34,7 @@ interface Props {
 const CardUser: NextPage<Props> = ({ user, isFriend, isMySelf , isFollowing , isOnline ,  lastTime , isSendFriendRequest , isReceiveFriendRequest }) => {
     const { data: session } = useSession();
     const dispatch = useDispatch()
+    const { t } = useTranslation()
     const { socket } : any = useSelector<RootState>(state => state.socket)
     const [removeFriendship, { loading: loadingRemoveFriendship}] = useMutation(
         USER_OPERATIONS.Mutations.removeFriendship
@@ -129,6 +131,7 @@ const CardUser: NextPage<Props> = ({ user, isFriend, isMySelf , isFollowing , is
     },[loadingDeleteNotification])
 
     useEffect(() => {
+        setIsShowOptionFriend(false);
         return () => {
             setIsShowOptionFriend(false);
         };
@@ -189,7 +192,7 @@ const CardUser: NextPage<Props> = ({ user, isFriend, isMySelf , isFollowing , is
                                 {user?.friends?.length}
                             </span>
                             <div className="flex space-x-2">
-                                <span className="text-sm">friends </span>
+                                <span className="text-sm">{t('common:friends')} </span>
                             </div>
                         </div>
                     )}
@@ -197,7 +200,7 @@ const CardUser: NextPage<Props> = ({ user, isFriend, isMySelf , isFollowing , is
                         <div className="flex items-center space-x-2">
                             <ImLocation className="text-sm" />
                             <div className="flex space-x-2">
-                                <span className="text-sm">Live at</span>
+                                <span className="text-sm">{t('common:living_at')}</span>
                             </div>
                             <span className="text-sm font-semibold">
                                 {user?.liveAt}
@@ -219,8 +222,8 @@ const CardUser: NextPage<Props> = ({ user, isFriend, isMySelf , isFollowing , is
                     onClick={invalidAction}
                     className="w-1/2 relative justify-center cursor-pointer hover:bg-gray-300 transition-colors duration-300 flex space-x-2 items-center p-2 rounded-md bg-gray-200 text-black ">
                         <MdModeEdit className="text-xl" />
-                        <span className="font-semibold text-sm">
-                            Edit profile
+                        <span className="font-semibold text-sm whitespace-nowrap first-letter:uppercase lowercase">
+                            {`${t('common:edit')} ${t('common:profile')}`}
                         </span>
                     </div>
                 </div>
@@ -230,8 +233,8 @@ const CardUser: NextPage<Props> = ({ user, isFriend, isMySelf , isFollowing , is
                     <button
                     onClick={() => setIsShowOptionFriend(!isShowOptionFriend)}
                     className="w-1/2 relative justify-center cursor-pointer hover:bg-gray-300 transition-colors duration-300 flex space-x-2 items-center p-2 rounded-md bg-gray-200 text-black ">
-                        <FaUserCheck className="text-xl" />
-                        <span className="font-semibold text-sm">Friend</span>
+                        <FaUserCheck className="text-xl first-letter:uppercase" />
+                        <span className="font-semibold text-sm">{t('common:friends')}</span>
 
                         {isShowOptionFriend && (
                             <div
@@ -239,37 +242,37 @@ const CardUser: NextPage<Props> = ({ user, isFriend, isMySelf , isFollowing , is
                                 <button 
                                 disabled={loadingRemoveFriendship}
                                 onClick={handleUnfriend}
-                                className={`${loadingRemoveFriendship ? "cursor-not-allowed" : "cursor-pointer"} flex items-center space-x-2 text-sm font-semibold px-4 py-1 hover:bg-gray-200`}>
+                                className={`${loadingRemoveFriendship ? "cursor-not-allowed" : "cursor-pointer"}  whitespace-nowrap flex items-center space-x-2 text-sm font-semibold px-4 py-1 hover:bg-gray-200`}>
                                     {loadingRemoveFriendship ?
                                     <AiOutlineLoading3Quarters className="animate-spin transition-all duration-500 ease-linear text-primary" />
                                     :
                                     <HiUserRemove size={20} />
                                   }
-                                    <span>UnFriend</span>
+                                    <span className="first-letter:uppercase">{t('common:un_friend')}</span>
                                 </button>
                                 {isFollowing ?
                                 <button 
                                 disabled={loadingUnfollow}
                                 onClick={unFollowings}
-                                className={`${loadingUnfollow ? "cursor-not-allowed" : "cursor-pointer"} flex items-center space-x-2 text-sm font-semibold px-4 py-1 hover:bg-gray-200`}>
+                                className={`${loadingUnfollow ? "cursor-not-allowed" : "cursor-pointer"} whitespace-nowrap flex items-center space-x-2 text-sm font-semibold px-4 py-1 hover:bg-gray-200`}>
                                     {loadingUnfollow ?
                                 <AiOutlineLoading3Quarters className="animate-spin transition-all duration-500 ease-linear text-primary" />
                                  :
                                  <RiUserUnfollowFill size={18} />
                                 }
-                                    <span>UnFollowing</span>
+                                    <span className="first-letter:uppercase">{t('common:unfollow')}</span>
                                 </button>
                                 :
                                 <button 
                                 disabled={loadingFollow}
                                 onClick={followings}
-                                className={`${loadingFollow ? "cursor-not-allowed" : "cursor-pointer"}" flex items-center space-x-2 text-sm font-semibold px-4 py-1 hover:bg-gray-200`}>
+                                className={`${loadingFollow ? "cursor-not-allowed" : "cursor-pointer"}" whitespace-nowrap flex items-center space-x-2 text-sm font-semibold px-4 py-1 hover:bg-gray-200`}>
                                     {loadingFollow ? 
                                   <AiOutlineLoading3Quarters className="animate-spin transition-all duration-500 ease-linear text-primary" />
                                   :
                                   <RiUserFollowFill size={18} />
                                   }
-                                    <span>Follow</span>
+                                    <span className="first-letter:uppercase">{t('common:follow')}</span>
                                 </button>
                             }
                             </div>
@@ -280,7 +283,7 @@ const CardUser: NextPage<Props> = ({ user, isFriend, isMySelf , isFollowing , is
                     onClick={handleOpenMessage}
                     className="w-1/2 justify-center cursor-pointer hover:bg-blue-700 flex space-x-2 items-center p-2 rounded-md bg-primary text-light">
                         <AiOutlineMessage className="text-xl" />
-                        <span className="font-semibold text-sm">Message</span>
+                        <span className="font-semibold text-sm">{t('common:message')}</span>
                     </button>
                 </div>
             ) : (
@@ -295,13 +298,13 @@ const CardUser: NextPage<Props> = ({ user, isFriend, isMySelf , isFollowing , is
                         <MdPersonAddAlt1 className="text-xl" />
                      }
                         <span className="font-semibold text-sm">
-                            Add Friend
+                            {t('common:add_friend')} 
                         </span>
                     </button>
 
                     <div className="w-1/2 justify-center cursor-pointer hover:bg-gray-300 flex space-x-2 items-center p-2 rounded-md bg-gray-200 text-black">
                         <AiOutlineMessage className="text-xl" />
-                        <span className="font-semibold text-sm">Message</span>
+                        <span className="font-semibold text-sm">{t('common:message')}</span>
                     </div>
                 </div>
             )}

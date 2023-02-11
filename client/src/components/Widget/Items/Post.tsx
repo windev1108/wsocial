@@ -26,6 +26,7 @@ import { toast } from 'react-hot-toast';
 import Image from 'next/image';
 import CardUser from '../Cards/CardUser';
 import { RootState } from '@/redux/store';
+import { useTranslation } from 'react-i18next';
 
 interface PostProps {
     postId: string;
@@ -60,6 +61,7 @@ const Post: NextPage<PostProps> = ({
 }) => {
     const router = useRouter();
     const dispatch = useDispatch();
+    const { t } = useTranslation()
     const { users } : any = useSelector<RootState>(state => state.session)
     const { socket } : any = useSelector<RootState>(state => state.socket)
     const { data: session } = useSession();
@@ -91,7 +93,6 @@ const Post: NextPage<PostProps> = ({
             if (files.length > 0) {
                 destroyMultiple(files);
             }
-            toast.success("Delete post success")
             socket.emit("updatePost")
         } catch (error: any) {
             toast.error(error.message);
@@ -99,7 +100,7 @@ const Post: NextPage<PostProps> = ({
     };
     const handleToggleLike = async () => {
         try {
-            const { data, errors } = await toggleLikePost({
+            const { errors } = await toggleLikePost({
                 variables: {
                     postId,
                     isLiked,
@@ -112,10 +113,6 @@ const Post: NextPage<PostProps> = ({
             if (errors) {
                 toast.error('Something wrong!');
                 return;
-            }
-
-            if (data) {
-                toast.success(data.toggleLikePost.message);
             }
 
             socket?.emit("updatePost")
@@ -168,7 +165,6 @@ const Post: NextPage<PostProps> = ({
         setState({ ...state, isOpenFormComment: !isOpenFormComment });
     }, [isOpenFormComment]);
 
-
     
     return (
         <div className="bg-light flex-col gap-2 shadow-sm border-[1px] border-gray-200 rounded-lg h-auto">
@@ -200,13 +196,21 @@ const Post: NextPage<PostProps> = ({
                         <Link href={`/profile?id=${author.id}`}>
                             <h1 className="text-dark leading-2 lg:text-lg text-sm font-semibold cursor-pointer w-auto">
                                 {author.name}
-                                {activity !== 'CREATED_POST' && (
-                                    <span className="lg:inline-block inline mx-1 font-normal lg:text-base text-sm text-text">{`updated ${author.gender === 'FEMALE'
-                                        ? 'her'
-                                        : 'his'
-                                        } ${activity === 'UPDATE_AVATAR' ? 'profile picture' : 'cover photo'}
-                                  `}</span>
-                                )}
+                                    <span className="lg:inline-block inline mx-1 font-normal lg:text-base text-sm text-text">
+                                        {author.gender === 'MALE' &&  activity === 'UPDATE_AVATAR' && 
+                                          t('common:updated_his_profile_picture')
+                                        }
+                                        {author.gender === 'FEMALE' &&  activity === 'UPDATE_AVATAR' && 
+                                          t('common:updated_her_profile_picture')
+                                        }
+
+                                        {author.gender === 'FEMALE' &&  activity === 'UPDATE_BACKGROUND' && 
+                                          t('common:updated_her_cover_photo')
+                                        }
+                                         {author.gender === 'MALE' &&  activity === 'UPDATE_BACKGROUND' && 
+                                          t('common:updated_his_cover_photo')
+                                        }
+                                  </span>
                             </h1>
                         </Link>
                         <div className="group-hover:block hidden">
@@ -230,8 +234,10 @@ const Post: NextPage<PostProps> = ({
                                 {viewer === 'PRIVATE' && (
                                     <RiGitRepositoryPrivateFill />
                                 )}
-                                <span className="group-hover:scale-100 duration-500 transition-all  origin-top-left scale-0 absolute top-[100%] left-[50%] bg-black bg-opacity-60 text-light rounded-md px-2 py-1 text-sm shadow-md">
-                                    {formatFirstUppercase(viewer)}
+                                <span className="first-letter:uppercase whitespace-nowrap group-hover:scale-100 duration-500 transition-all  origin-top-left scale-0 absolute top-[100%] left-[50%] bg-black bg-opacity-60 text-light rounded-md px-2 py-1 text-sm shadow-md">
+                                    {viewer === 'FRIENDS' && t('common:friends')}
+                                    {viewer === 'PUBLIC' && t('common:public')}
+                                    {viewer === 'PRIVATE' && t('common:private')}
                                 </span>
                             </div>
                         </div>
@@ -242,24 +248,24 @@ const Post: NextPage<PostProps> = ({
                     <div className="group-hover:block rounded-lg absolute hidden top-[100%] right-0 bg-secondary shadow-md">
                         <button 
                         onClick={handleOpenSharePost}
-                        className="flex space-x-2 items-center font-semibold cursor-pointer px-4 py-2 hover:bg-gray-200 rounded-t-lg">
+                        className="whitespace-nowrap flex space-x-2 items-center font-semibold cursor-pointer px-4 py-2 hover:bg-gray-200 rounded-t-lg">
                             <AiOutlineShareAlt className="text-[#ffab00]" />
-                            <span>Share</span>
+                            <span>{t('common:share')}</span>
                         </button>
                         {session?.user.id === author.id &&
                             (loadingDelete ? (
                                 <button
                                     disabled={loadingDelete}
-                                    className="flex space-x-2 items-center font-semibold px-4 py-2 hover:bg-gray-200 rounded-b-lg cursor-not-allowed ">
+                                    className="w-full whitespace-nowrap flex space-x-2 items-center font-semibold px-4 py-2 hover:bg-gray-200 rounded-b-lg cursor-not-allowed ">
                                     <AiOutlineLoading3Quarters className="animate-spin transition-all duration-500 ease-linear text-primary" />
-                                    <span>Delete</span>
+                                    <span className="first-letter:uppercase">{t('common:delete')}</span>
                                 </button>
                             ) : (
                                 <button
                                     onClick={handleDeletePost}
-                                    className="flex space-x-2 items-center font-semibold cursor-pointer px-4 py-2 hover:bg-gray-200 rounded-b-lg">
+                                    className="w-full whitespace-nowrap flex space-x-2 items-center font-semibold cursor-pointer px-4 py-2 hover:bg-gray-200 rounded-b-lg">
                                     <AiOutlineDelete className="text-red-400" />
-                                    <span>Delete</span>
+                                    <span className="first-letter:uppercase">{t('common:delete')}</span>
                                 </button>
                             ))}
                     </div>
@@ -357,16 +363,14 @@ const Post: NextPage<PostProps> = ({
                                             className={`${files.length >= 3 &&
                                                 index === 0 &&
                                                 'row-span-3 col-span-2'
-                                                } 
-                        w-full`}>
+                                                } w-full`}>
                                             <Image
                                                 width={1000}
                                                 height={1000}
                                                 className={`${files.length === 1
                                                     ? 'object-contain lg:h-[30rem] h-auto'
                                                     : 'object-cover h-full '
-                                                    }
-                            w-full`}
+                                                    }w-full`}
                                                 src={file.url}
                                                 alt=""
                                             />
@@ -377,14 +381,12 @@ const Post: NextPage<PostProps> = ({
                                     <Link
                                         key={files[3].url}
                                         href={`/post/${postId}?q=${files[3].id}`}
-                                        className={`
-                         w-full`}>
+                                        className={`w-full`}>
                                         <video
                                             className={` ${files.length === 1
                                                 ? 'object-contain lg:h-[35rem] h-auto'
                                                 : 'object-cover h-full '
-                                                }
-                        w-full`}
+                                                }w-full`}
                                             src={files[3].url}></video>
                                     </Link>
                                 ) : (
@@ -415,8 +417,7 @@ const Post: NextPage<PostProps> = ({
                                         className={`${files.length >= 3 &&
                                             index === 0 &&
                                             'row-span-3 col-span-2'
-                                            } 
-                w-full`}>
+                                            } w-full`}>
                                         <video
                                             className={`${files.length >= 3 &&
                                                 index === 0 &&
@@ -424,8 +425,7 @@ const Post: NextPage<PostProps> = ({
                                                 } ${files.length === 1
                                                     ? 'object-contain h-[35rem]'
                                                     : 'object-cover h-full '
-                                                }
-                    w-full`}
+                                                }w-full`}
                                             controls={index === 0}
                                             src={file.url}></video>
                                     </Link>
@@ -436,16 +436,14 @@ const Post: NextPage<PostProps> = ({
                                         className={`${files.length >= 3 &&
                                             index === 0 &&
                                             'row-span-3 col-span-2'
-                                            } 
-                    w-full`}>
+                                            }  w-full`}>
                                         <Image
                                             width={1000}
                                             height={1000}
                                             className={`${files.length === 1
                                                 ? 'object-contain h-full'
                                                 : 'object-cover h-full '
-                                                }
-                        w-full`}
+                                                }w-full`}
                                             src={file.url}
                                             alt=""
                                         />
@@ -524,15 +522,13 @@ const Post: NextPage<PostProps> = ({
                                             <Link
                                                 key={postSharedOf.files[3].url}
                                                 href={`/post/${postSharedOf.id}?q=${postSharedOf?.files[3].id}`}
-                                                className={`
-                         w-full`}>
+                                                className={`w-full`}>
                                                 <video
                                                     className={` ${postSharedOf?.files
                                                         .length === 1
                                                         ? 'object-contain lg:h-[35rem] h-auto'
                                                         : 'object-cover h-full '
-                                                        }
-                        w-full`}
+                                                        }w-full`}
                                                     src={
                                                         postSharedOf?.files[3].url
                                                     }></video>
@@ -568,8 +564,7 @@ const Post: NextPage<PostProps> = ({
                                                         .length >= 3 &&
                                                         index === 0 &&
                                                         'row-span-3 col-span-2'
-                                                        } 
-                w-full`}>
+                                                        } w-full`}>
                                                     <video
                                                         className={`${postSharedOf?.files
                                                             .length >= 3 &&
@@ -579,8 +574,7 @@ const Post: NextPage<PostProps> = ({
                                                                 .length === 1
                                                                 ? 'object-contain h-[35rem]'
                                                                 : 'object-cover h-full '
-                                                            }
-                    w-full`}
+                                                            }w-full`}
                                                         controls={index === 0}
                                                         src={file.url}></video>
                                                 </Link>
@@ -592,8 +586,7 @@ const Post: NextPage<PostProps> = ({
                                                         .length >= 3 &&
                                                         index === 0 &&
                                                         'row-span-3 col-span-2'
-                                                        } 
-                    w-full`}>
+                                                        } w-full`}>
                                                     <Image
                                                         width={100}
                                                         height={100}
@@ -601,8 +594,7 @@ const Post: NextPage<PostProps> = ({
                                                             .length === 1
                                                             ? 'object-contain h-[35rem]'
                                                             : 'object-cover h-auto '
-                                                            }
-                        w-full`}
+                                                            }w-full`}
                                                         src={file.url}
                                                         alt=""
                                                     />
@@ -649,10 +641,18 @@ const Post: NextPage<PostProps> = ({
                                             {postSharedOf.viewer === 'PRIVATE' && (
                                                 <RiGitRepositoryPrivateFill />
                                             )}
-                                            <span className="group-hover:scale-100 duration-500 transition-all  origin-top-left scale-0 absolute top-[100%] left-[50%] bg-black bg-opacity-60 text-light rounded-md px-2 py-1 text-sm shadow-md">
-                                                {formatFirstUppercase(
-                                                    postSharedOf.viewer
+                                            <span className="first-letter:uppercase whitespace-nowrap group-hover:scale-100 duration-500 transition-all  origin-top-left scale-0 absolute top-[100%] left-[50%] bg-black bg-opacity-60 text-light rounded-md px-2 py-1 text-sm shadow-md">
+                                               {postSharedOf.viewer === 'FRIENDS' && (
+                                                  t('common:friends')
                                                 )}
+
+                                              {postSharedOf.viewer === 'PUBLIC' && (
+                                                  t('common:public')
+                                                )}
+                                                 {postSharedOf.viewer === 'PRIVATE' && (
+                                                  t('common:private')
+                                                )}
+                                                
                                             </span>
                                         </div>
                                     </div>
@@ -714,9 +714,9 @@ const Post: NextPage<PostProps> = ({
                         </div>
                     )}
                 </div>
-                <div className="flex space-x-3 text-gray-500 lg:text-base text-sm">
-                    <span>{`${countComment} Comments`}</span>
-                    <span>{`${countShares} Shares`}</span>
+                <div className="lowercase flex space-x-3 text-gray-500 lg:text-base text-sm">
+                    <span>{`${countComment} ${t('common:comment')}`}</span>
+                    <span>{`${countShares} ${t('common:share')}`}</span>
                 </div>
             </div>
 
@@ -737,20 +737,20 @@ const Post: NextPage<PostProps> = ({
                         ) : (
                             <AiOutlineHeart className="lg:text-2xl text-xl" />
                         )}
-                        <span>Like</span>
+                        <span>{t('common:like')}</span>
                     </button>
                 )}
                 <div
                     onClick={handleToggleFormComment}
-                    className="text-text hover:bg-gray-200 cursor-pointer rounded-xl py-2 flex justify-center items-center space-x-2 lg:text-base text-sm">
+                    className="first-letter:uppercase text-text hover:bg-gray-200 cursor-pointer rounded-xl py-2 flex justify-center items-center space-x-2 lg:text-base text-sm">
                     <FaRegComment className="lg:text-2xl text-lg" />
-                    <span>Comment</span>
+                    <span>{t('common:comment')}</span>
                 </div>
                 <button
                     onClick={handleOpenSharePost}
-                    className="text-text hover:bg-gray-200 cursor-pointer rounded-xl py-2 flex justify-center items-center space-x-2 lg:text-base text-sm">
+                    className="first-letter:uppercase text-text hover:bg-gray-200 cursor-pointer rounded-xl py-2 flex justify-center items-center space-x-2 lg:text-base text-sm">
                     <RiShareForwardLine className="lg:text-xl text-xl" />
-                    <span>Share</span>
+                    <span>{t('common:share')}</span>
                 </button>
             </div>
             {isOpenFormComment && (

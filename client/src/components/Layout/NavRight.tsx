@@ -1,20 +1,12 @@
 import React from 'react'
 import { BsSearch, BsThreeDots } from 'react-icons/bs'
 import { NextPage } from 'next';
-import { useQuery } from '@apollo/client';
-import USER_OPERATIONS from '@/graphql/operations/user';
-import { Session } from 'next-auth';
 import { SocketUser, User } from '@/utils/types';
 import ChatUser from '@/components/Widget/Items/ChatUser';
 
 
 
-const FriendsList: NextPage<{session : Session , users: SocketUser[], className: string}> = ({session,users , className}) => {
-    const { data: user } = useQuery(USER_OPERATIONS.Queries.getMyFriends, {
-        variables: {
-            id: session?.user?.id
-        }
-    })
+const FriendsList: NextPage<{friends : User[] , users: SocketUser[], className: string}> = ({friends ,users , className}) => {
  
 
     return (
@@ -87,7 +79,7 @@ const FriendsList: NextPage<{session : Session , users: SocketUser[], className:
                 <BsThreeDots />
             </div>
             <div className="scrollbar-thumb-gray-400 flex-col overflow-y-scroll h-[65vh]  space-y-2 scrollbar-thin  scrollbar-track-transparent">
-                {user?.getUserById?.friends?.map((user : User) => (
+                {friends?.map((user : User) => (
                      <ChatUser key={user.id} user={user} lastTime={users.find(u => u.userId === user?.id)?.lastTime!} isOnline={users.some((u : SocketUser) => u.userId === user?.id && u.isOnline)} />
                 ))}``
             </div>
@@ -95,4 +87,4 @@ const FriendsList: NextPage<{session : Session , users: SocketUser[], className:
     )
 }
 
-export default FriendsList
+export default React.memo(FriendsList)

@@ -104,7 +104,7 @@ const Profile: NextPage<Props> = ({ profileId }) => {
     const { conversations }: conversationSlice | any = useSelector<RootState>(
         (state) => state.conversations
     );
-    const { users }:  any = useSelector<RootState>(
+    const { users , user: sessionUser }:  any = useSelector<RootState>(
         (state) => state.session
     );
     const [getPostInProfile, { data: dataPost, loading: loadingPost }] =
@@ -819,7 +819,7 @@ const Profile: NextPage<Props> = ({ profileId }) => {
                             <div className="lg:col-span-6 col-span-12 space-y-6 lg:!mx-6 lg:my-0 my-6 !mx-0">
                             <div className="bg-light flex-col gap-2 p-4 border-[1px] border-gray-200 shadow-sm rounded-lg">
             <div className="flex space-x-4 items-center">
-                {!user?.image ?
+                {!sessionUser?.image ?
               <div  className="w-10 h-10 rounded-full bg-secondary">
               </div>    
             :
@@ -827,7 +827,7 @@ const Profile: NextPage<Props> = ({ profileId }) => {
                     width={100}
                     height={100}
                     className="object-cover w-10 h-10  rounded-full"
-                    src={user?.image}
+                    src={sessionUser?.image}
                     alt=""
                 />
             }
@@ -848,17 +848,17 @@ const Profile: NextPage<Props> = ({ profileId }) => {
             <div className="grid grid-cols-3 gap-2 p-2">
                 <div className="py-2 hover:bg-gray-300 border cursor-pointer justify-center rounded-lg shadow-sm flex items-center space-x-2">
                     <HiOutlinePhotograph className="text-dark" />
-                    <span className="lg:text-base text-sm text-dark">{`${t('common:photo')}/${t(
+                    <span className="lg:text-base text-xs text-dark">{`${t('common:photo')}/${t(
                         'common:video'
                     )}`}</span>
                 </div>
                 <div className="py-2 hover:bg-gray-300 border cursor-pointer text-dark justify-center rounded-lg shadow-sm flex items-center space-x-2">
                     <FiSmile />
-                    <span className="lg:text-base text-sm">{`${t('common:felling')}`}</span>
+                    <span className="lg:text-base text-xs">{`${t('common:felling')}`}</span>
                 </div>
                 <div className="py-2 hover:bg-gray-300 border cursor-pointer text-dark justify-center rounded-lg shadow-sm flex items-center space-x-2">
-                    <BsCameraVideo />
-                    <span className="lg:text-base text-sm whitespace-nowrap">{t('common:live_video')}</span>
+                    <BsCameraVideo className="text-base" />
+                    <span className="lg:text-base text-xs whitespace-nowrap">{t('common:live_video')}</span>
                 </div>
             </div>
         </div>

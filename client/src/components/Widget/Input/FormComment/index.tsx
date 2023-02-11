@@ -25,6 +25,8 @@ import { uploadMultiple } from '@/utils/constants';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/redux/store';
 import Image from 'next/image';
+import { useTranslation } from 'react-i18next';
+import { useRouter } from 'next/router';
 
 const FormComment: NextPage<{
     postId: string;
@@ -32,6 +34,8 @@ const FormComment: NextPage<{
     comments: CommentModel[];
 }> = ({ postId, comments , authorId }) => {
     const { user } : any = useSelector<RootState>(state => state.session)
+    const { t } = useTranslation()
+    const router = useRouter()
     const [state, setState] = useState<{
         blobPicture: string;
         content: string;
@@ -60,7 +64,7 @@ const FormComment: NextPage<{
             e.preventDefault();
             try {
                 if (!content && !blobPicture) {
-                    toast.error('Please enter comment content');
+                    toast.error(router.locale === "vi" ? "Vui lòng nhập nội dung bình luận" : "Please enter comment content");
                     return;
                 }
 
@@ -94,7 +98,7 @@ const FormComment: NextPage<{
                 }
 
                 setState({ ...state, content: '', blobPicture: '', file: {} });
-                toast.success('Comment post success');
+                toast.success(`${router.locale === 'vi' ? "Bình luận thành công" : "Comment success" }`);
             } catch (error: any) {
                 toast.error(error.message);
             }
@@ -126,9 +130,9 @@ const FormComment: NextPage<{
                         <input
                             disabled={loadingCreateComment}
                             ref={commentInputRef}
-                            className="flex-1 py-2  px-4 bg-transparent outline-none lg:text-base text-sm"
+                            className="placeholder:first-letter:uppercase flex-1 py-2  px-4 bg-transparent outline-none lg:text-base text-sm"
                             type="text"
-                            placeholder="Write a comment..."
+                            placeholder={t('common:write_a_comment')!}
                             value={content}
                             onChange={(e) =>
                                 setState({ ...state, content: e.target.value })

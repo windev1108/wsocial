@@ -20,7 +20,7 @@ const Feed = () => {
     const dispatch = useDispatch();
     const { t } = useTranslation();
     const { socket } : any = useSelector<RootState>(state => state.socket)
-    const { user } : any = useSelector<RootState>(state => state.socket)
+    const { user } : any = useSelector<RootState>(state => state.session)
     const { loading, data , refetch } = useQuery(POST_OPERATIONS.Queries.getPosts, {
         variables: {
             userId: session?.user.id,
@@ -38,7 +38,6 @@ const Feed = () => {
              })
          })
     },[socket])
-
 
     return (
         <div className="col-span-12 p-4 lg:w-[50vw] w-full space-y-6 pb-11 overflow-scroll scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 overflow-x-hidden h-[90vh]">
@@ -67,7 +66,9 @@ const Feed = () => {
                             )
                         }
                         className="bg-secondary cursor-pointer hover:bg-gray-200 duration-300 transition-all outline-none p-3 text-text rounded-lg w-full">
-                        <span>What's happening</span>
+                       {user?.name &&
+                        <span>{`${user?.name}, ${t('common:what_are_you_thingking')}`}</span>
+                       }
                     </div>
                 </div>
             </div>

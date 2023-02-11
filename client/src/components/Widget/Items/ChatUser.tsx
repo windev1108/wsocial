@@ -36,12 +36,12 @@ const ChatUser: NextPage<{ user: User , isOnline: boolean , lastTime: Date}> = (
     <div
     onClick={handleOpenMessage}
     className="hover:bg-gray-200 cursor-pointer py-1 rounded-lg flex items-center space-x-4 px-3 mx-2">
-        <Image width={100} height={100} className=" object-cover w-10 h-10 rounded-full " src={user?.image} alt="" />
+        <Image width={100} height={100} className=" object-cover lg:w-10 lg:h-10 w-8 h-8 rounded-full " src={user?.image} alt="" />
         <div className="flex-1">
             <span className="text-dark font-semibold text-sm">{user?.name}</span>
         </div>
         {lastTime &&
-        <span className="text-sm font-semibold text-light rounded-lg bg-primary p-1">{`${moment(new Date(lastTime), "x").fromNow()}`}</span>
+        <span className="lg:text-sm text-xs font-semibold text-light rounded-lg bg-primary p-1">{`${moment(new Date(lastTime), "x").fromNow()}`}</span>
         }
         {isOnline && 
         <div className="border-light bg-[#85c240] animate-ripple border-[3px] w-[.90rem] h-[.90rem] rounded-full"></div>

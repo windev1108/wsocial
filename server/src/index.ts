@@ -59,7 +59,7 @@ const main = async () => {
       io.emit("users", users)
     })
 
-    socket.on("send_message", ({ sender, receiverId, message }: { sender: any, receiverId: string, message: string }) => {
+    socket.on("sendMessage", ({ sender, receiverId, message }: { sender: any, receiverId: string, message: string }) => {
       socket.to(receiverId).emit("receive_message", {
         sender: {
           ...sender,
@@ -69,18 +69,18 @@ const main = async () => {
       })
     })
 
-    socket.on("user-typing", ({ sender, receiverId, isTyping }: { sender: any, receiverId: string, isTyping: boolean }) => {
+    socket.on("userTyping", ({ sender, receiverId, isTyping }: { sender: any, receiverId: string, isTyping: boolean }) => {
       socket.to(receiverId).emit("user-typing", { sender, isTyping })
     })
 
-    socket.on("calling_to", ({ caller, receiverId }: { caller: PeerUser, receiverId: string }) => {
-      socket.to(receiverId).emit("calling_to", {
+    socket.on("calling", ({ caller, receiverId }: { caller: PeerUser, receiverId: string }) => {
+      socket.to(receiverId).emit("calling", {
         caller
       })
     })
 
-    socket.on("acceptCall", ({ peerId, callerId }: { peerId: string, callerId: string }) => {
-      socket.broadcast.emit("acceptCall", { peerId })
+    socket.on("callAccepted", ({ peerId, callerId }: { peerId: string, callerId: string }) => {
+      socket.to(callerId).emit("callAccepted" , { peerId })
       console.log("acceptCall :", callerId);
       console.log("peerId :", peerId);
     })

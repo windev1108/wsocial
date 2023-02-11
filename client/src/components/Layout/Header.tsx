@@ -36,7 +36,7 @@ const MainHeader: NextPage<{
                 <input
                     className={`outline-none bg-transparent w-full`}
                     type="text"
-                    placeholder="Search for something here..."
+                    placeholder={`${t('common:search_for_something')}`}
                 />
             </div>
             <div className="lg:flex col-span-4 hidden px-4 items-center justify-end ">

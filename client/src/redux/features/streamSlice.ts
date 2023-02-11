@@ -8,6 +8,11 @@ export interface callStreamSlice {
             name: string
             image: string
         } | null
+        receiver: {
+            id: string
+            name: string
+            image: string
+        } | null
     },
     answer: {
         isOpen: boolean
@@ -24,6 +29,11 @@ const initialState: callStreamSlice = {
     stream: {
         isOpen: false,
         caller: {
+            id: "",
+            name: "",
+            image: "",
+        },
+        receiver: {
             id: "",
             name: "",
             image: "",
@@ -49,17 +59,10 @@ export const callStreamSlice: any = createSlice({
                 caller: null
             }
         },
-        setOpenAnswer: (state,action) => {
-            state.answer = action.payload
-            state.stream = {
-                isOpen: false,
-                caller: null
-            }
-        }
     },
 });
 
 // Action creators are generated for each case reducer function
-export const { setOpenStream , setOpenAnswer } = callStreamSlice.actions;
+export const { setOpenStream  } = callStreamSlice.actions;
 
 export default callStreamSlice.reducer;

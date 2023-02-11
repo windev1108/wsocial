@@ -1,6 +1,7 @@
 import Image from 'next/image'
 import { useRouter } from 'next/router'
 import React, { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 interface State {
   isShowOptionLang: boolean | undefined
@@ -10,6 +11,7 @@ const EditLanguage = () => {
   const [state, setState] = useState<State>({
     isShowOptionLang: false,
   })
+  const { t } = useTranslation()
   const { isShowOptionLang } = state
 
 
@@ -21,9 +23,9 @@ const EditLanguage = () => {
 
   return (
     <div className="p-6 flex flex-col space-y-4 lg:h-[70%] h-screen">
-      <h1 className="text-lg text-text font-bold">Language</h1>
+      <h1 className="text-lg text-text font-bold">{t('common:language')}</h1>
       <span className="text-text font-semibold ">
-        Choose your language
+        {t('common:choose_your_language')}
       </span>
 
       <div className="relative flex ">
@@ -31,14 +33,14 @@ const EditLanguage = () => {
           onClick={() => setState({ ...state, isShowOptionLang: !isShowOptionLang })}
           className="relative w-44 top-0 left-0 flex-shrink-0 z-10 inline-flex items-center py-2.5 px-4  font-medium text-center text-gray-500 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:ring-gray-700 dark:text-white dark:border-gray-600" type="button">
           {router.locale === "en" ?
-            <div className="inline-flex items-center space-x-3">
+            <div className="inline-flex items-center space-x-3 whitespace-nowrap">
               <Image className="w-full h-full" width="20" height="20" src={require("@/assets/images/en-flag.png")} alt="" />
-              <span>English</span>
+              <span>{t('common:english')}</span>
             </div>
             :
-            <div className="inline-flex items-center space-x-3">
+            <div className="inline-flex items-center space-x-3 whitespace-nowrap">
               <Image className="w-full h-full" width="20" height="20" src={require("@/assets/images/vi-flag.png")} alt="" />
-              <span>Vietnamese</span>
+              <span>{t('common:vietnamese')}</span>
             </div>
           }
 
@@ -51,9 +53,9 @@ const EditLanguage = () => {
                 <button
                   onClick={() => handleChangeLang('vi')}
                   type="button" className="inline-flex w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-600 dark:hover:text-white">
-                  <div className="inline-flex items-center space-x-2">
+                  <div className="inline-flex items-center space-x-2 whitespace-nowrap">
                     <Image className="w-full h-full" width="20" height="20" src={require("@/assets/images/vi-flag.png")} alt="" />
-                    <span>Vietnamese</span>
+                    <span>{t('common:vietnamese')}</span>
                   </div>
                 </button>
               </li>
@@ -62,9 +64,9 @@ const EditLanguage = () => {
                 <button
                   onClick={() => handleChangeLang('en')}
                   type="button" className="inline-flex w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-600 dark:hover:text-white">
-                  <div className="inline-flex items-center space-x-2">
+                  <div className="inline-flex items-center space-x-2 whitespace-nowrap">
                     <Image className="w-full h-full" width="20" height="20" src={require("@/assets/images/en-flag.png")} alt="" />
-                    <span>English</span>
+                    <span>{t('common:english')}</span>
                   </div>
                 </button>
               </li>

@@ -4,7 +4,7 @@ import React, { ReactNode, lazy, memo, useEffect, Suspense , useState } from 're
 import FriendsList from './NavRight';
 import NavBar from './NavLeft';
 import Header from './Header';
-import { Toaster, toast } from 'react-hot-toast';
+import { Toaster } from 'react-hot-toast';
 import { useRouter } from 'next/router';
 import FormSubmitPost from '@/components/Widget/Modals/FormSubmitPost';
 import { useDispatch, useSelector } from 'react-redux';
@@ -12,18 +12,18 @@ import { RootState } from '@/redux/store';
 import UserLiked from '@/components/Widget/Modals/UserLiked';
 import Conversation from '@/components/Widget/Modals/Conversation';
 import { useSession } from 'next-auth/react';
-import { useLazyQuery, useQuery} from '@apollo/client';
+import { useQuery} from '@apollo/client';
 import NOTIFICATION_OPERATIONS from '@/graphql/operations/notifications';
 import ConversationCollapse from '@/components/Widget/Modals/ConversationCollapse';
 import { User } from '@/utils/types';
 import io, { Socket } from 'socket.io-client'
 import { addConversation } from '@/redux/features/conversationSlice';
-import { setOpenAnswer } from '@/redux/features/streamSlice';
 import { setSession, setSessionUsers } from '@/redux/features/sessionSlice';
 import { setSocket } from '@/redux/features/socketSlice';
-import ToastInfo from '../Widget/Toasts/ToastInfo';
 import { LoadingButton } from '../Widget/Loading';
-const NavBarMobile = lazy(() => import("@/components/Widget/Modals/NavBarMobile"))
+// import VideoCall from '@/components/Widget/Calling/VideoCall';
+import dynamic from 'next/dynamic';
+const NavBarMobile = dynamic(() => import("@/components/Widget/Modals/NavBarMobile"))
 
 
 interface LayoutProps {
@@ -77,6 +77,7 @@ const Layout: NextPage<LayoutProps> = ({ children }) => {
      }))
    },[data])
 
+
    useEffect(() => {
        socket.on('connect', () => {
         console.log('Socket connected')
@@ -110,12 +111,12 @@ const Layout: NextPage<LayoutProps> = ({ children }) => {
         }
        })
 
-       socket.on("calling_to" , ({caller}) => {
-           dispatch(setOpenAnswer({
-               isOpen: true,
-               caller,
-           }))
-       })
+    //    socket.on("calling" , ({caller}) => {
+    //        dispatch(setOpenStream({
+    //            isOpen: true,
+    //            caller,
+    //        }))
+    //    })
 
        socket.on("updateNotification", () => {
          console.log("updateNotification");
@@ -123,6 +124,11 @@ const Layout: NextPage<LayoutProps> = ({ children }) => {
             id: session?.user.id,
          })
        })
+
+       socket.on("acceptCall", ({peerId}: { peerId : string}) => {
+        console.log("acceptCall", );
+        console.log("peerId", peerId );
+    })
 
        return () => {
          socket.off("connect")
@@ -148,11 +154,12 @@ const Layout: NextPage<LayoutProps> = ({ children }) => {
         <>
             {showFormSubmitPost.isOpen && <FormSubmitPost />}
             {showUserLikes.isOpen && <UserLiked />}
-            {/* {stream.isOpen && <VideoCall /> }
-            {answer.isOpen && <AnswerCall />} */}
+            {/* {stream.isOpen && <VideoCall /> } */}
             <Suspense fallback={<LoadingButton />}>
             <NavBarMobile
+            friends={data?.getUserById?.friends}
             session={session}
+            users={users}
             notifications={data?.getUserById?.notificationsTo}  
             isLoadingNotification={loading}
             setClose={closeNavBarMobile} open={isOpenNavbarMobile} />
@@ -160,7 +167,7 @@ const Layout: NextPage<LayoutProps> = ({ children }) => {
 
 
             {conversations.length > 0 && (
-                <div className="absolute bottom-0 right-10 h-[32rem] flex space-x-2 z-[10001]">
+                <div className="absolute bottom-0 right-10 h-[32rem] flex lg:space-x-2 z-[10001]">
                     {conversations?.map((conversation: any) => (
                         <Conversation
                             key={conversation?.user?.id}
@@ -175,7 +182,7 @@ const Layout: NextPage<LayoutProps> = ({ children }) => {
             )}
 
             {conversationsCollapse.length > 0 && (
-                <div className="absolute bottom-5 top-5 right-0 flex space-y-4 z-[10000] flex-col justify-end">
+                <div className="absolute bottom-5 right-0 flex space-y-4 z-[10000] flex-col justify-end">
                     {conversationsCollapse?.map(({id, user}: { id: string , user : User }) => (
                         <ConversationCollapse
                             key={user?.id}
@@ -220,7 +227,7 @@ const Layout: NextPage<LayoutProps> = ({ children }) => {
                     {router.asPath === '/community' ||
                     router.asPath === '/notification' ||
                     router.asPath === '/' ? (
-                        <FriendsList className={"lg:block hidden bg-light col-span-2 space-y-4 shadow-md"} users={users} session={session} />
+                        <FriendsList className={"lg:block hidden bg-light col-span-2 space-y-4 shadow-md"} friends={data?.getUserById?.friends!} users={users} />
                     ) : (
                         <></>
                     )}

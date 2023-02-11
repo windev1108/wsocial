@@ -17,6 +17,7 @@ import { LoadingComponent } from '../Loading';
 import MESSAGE_OPERATIONS from '@/graphql/operations/message';
 import { useSession } from 'next-auth/react';
 import moment from 'moment';
+import { useTranslation } from 'react-i18next';
 
 
 const Conversation: React.FC<{
@@ -28,6 +29,7 @@ const Conversation: React.FC<{
     lastTimeConnected: Date
 }> = ({ user, conversationId , lastTimeConnected , isOnline , isTyping , sender}) => {
     const dispatch = useDispatch();
+    const { t } = useTranslation()
     const { data: session } = useSession()
     const { socket } : any = useSelector<RootState>(state => state.socket)
     const { conversationsCollapse }: any = useSelector<RootState>(
@@ -65,7 +67,7 @@ const Conversation: React.FC<{
     },[sender,loadingConversation , loadingSendMessage, isTyping])
 
      useEffect(() => {
-            socket?.emit("user-typing", 
+            socket?.emit("userTyping", 
             { sender: {
                 id: session?.user?.id,
             } , receiverId: user.id , isTyping: Boolean(content) })
@@ -112,7 +114,7 @@ const Conversation: React.FC<{
                 refetchQueries: ['findConversation'],
                 awaitRefetchQueries: true
             })
-            socket.emit("send_message", { 
+            socket.emit("sendMessage", { 
                 sender: {
                 id: session?.user?.id,
                 name: session?.user?.name,
@@ -129,22 +131,27 @@ const Conversation: React.FC<{
        toast.error("This feature is coming soon")
        return
 
-    //     socket.emit("calling_to", 
-    //     { caller: {
-    //         id: session?.user?.id,
-    //         name: session?.user?.name,
-    //         image: session?.user?.image
-    //     },
-    //     receiverId: user.id
-    // })
-    //     dispatch(setOpenStream({
-    //         isOpen: true,
-    //         caller: {
-    //             id: session?.user?.id,
-    //             name: session?.user?.name,
-    //             image: session?.user?.image
-    //         }
-    //     }))
+        // socket.emit("calling", 
+        // { caller: {
+        //     id: session?.user?.id,
+        //     name: session?.user?.name,
+        //     image: session?.user?.image
+        // },
+        // receiverId: user.id
+        // })
+        // dispatch(setOpenStream({
+        //     isOpen: true,
+        //     caller: {
+        //         id: session?.user?.id,
+        //         name: session?.user?.name,
+        //         image: session?.user?.image
+        //     },
+        //     receiver: {
+        //         id: user.id,
+        //         name: user.name,
+        //         image: user.image
+        //     }
+        // }))
     },[])
 
 
@@ -171,13 +178,13 @@ const Conversation: React.FC<{
 
                         {isOnline &&
                           <span className="text-xs whitespace-nowrap">
-                          {"Active"}
+                          {t('common:active')}
                         </span>
                         }
 
                         {lastTimeConnected && 
                          <span className="text-xs whitespace-nowrap">
-                         {`Active ${moment(new Date(lastTimeConnected), "x").fromNow()}`}
+                         {`${t('common:active')} ${moment(new Date(lastTimeConnected), "x").fromNow()}`}
                        </span>
                         }
                       

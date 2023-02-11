@@ -115,7 +115,7 @@ const NotFriendComponent: NextPage<NotFriendComponentProps> = ({
                 variables: {
                     userIdB,
                 },
-                refetchQueries: ['getMyCommunity', 'getMyNotifications'],
+                refetchQueries: ['getMyCommunity', 'getMyNotifications' , 'getMyInfo'],
                 awaitRefetchQueries: true,
             });
 

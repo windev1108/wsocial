@@ -17,6 +17,7 @@ import { BiDotsHorizontalRounded } from 'react-icons/bi';
 import FormReplyComment from '../../../../Input/FormReplyComment';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useTranslation } from 'react-i18next';
 
 const ChildComment: NextPage<{
     id: string;
@@ -48,6 +49,7 @@ const ChildComment: NextPage<{
         isOpenFormReply: false,
         isOpenChildComment: false,
     });
+    const { t } = useTranslation()
     const { isOpenFormReply } = state;
     const { data: session } = useSession();
     const [deleteComment, { loading: loadingDeleteComment }] = useMutation<
@@ -139,8 +141,8 @@ const ChildComment: NextPage<{
                                 onClick={handleToggleLikeComment}
                                 className={`${
                                     isLiked ? 'text-primary' : 'text-dark'
-                                } hover:underline text-sm font-semibold`}>
-                                Like
+                                } first-letter:uppercase hover:underline text-sm font-semibold`}>
+                                {t('common:like')}
                             </button>
                         )}
                         <button
@@ -152,16 +154,16 @@ const ChildComment: NextPage<{
                             }
                             className={`${
                                 isOpenFormReply ? 'text-primary' : 'text-dark'
-                            } hover:underline text-sm font-semibold`}>
-                            Reply
+                            } first-letter:uppercase hover:underline text-sm font-semibold`}>
+                            {t('common:reply')}
                         </button>
                         <span className="hover:underline text-sm">
                             {' '}
                             {moment(createdAt, 'x').fromNow()}
                         </span>
                         {createdAt !== updatedAt && (
-                            <span className="hover:underline text-sm">
-                                Edited
+                            <span className="first-letter:uppercase hover:underline text-sm">
+                                {t('common:edited')}
                             </span>
                         )}
                     </div>
@@ -198,12 +200,12 @@ const ChildComment: NextPage<{
                             {loadingDeleteComment && (
                                 <AiOutlineLoading3Quarters className="animate-spin transition-all duration-500 ease-linear text-primary inline mx-2" />
                             )}
-                            Delete comment
+                            {`${t('common:delete')} ${t("common:comment")}`}
                         </button>
 
-                        <button className="whitespace-nowrap text-dark font-semibold hover:bg-gray-200 py-2 px-3 w-full bg-secondary">
+                        {/* <button className="whitespace-nowrap text-dark font-semibold hover:bg-gray-200 py-2 px-3 w-full bg-secondary">
                             Edit comment
-                        </button>
+                        </button> */}
                     </div>
                 </div>
             )}

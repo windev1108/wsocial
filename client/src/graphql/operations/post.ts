@@ -30,6 +30,7 @@ const POST_OPERATIONS = {
                         id
                         name
                         image
+                        gender
                         followers {
                             id
                         }

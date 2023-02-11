@@ -63,7 +63,7 @@ const PostDetail: NextPage<{
             });
             document.title = `Post of ${res?.data?.getPostById?.author?.name!}`;
         });
-    }, [q]);
+    }, [q,index]);
 
     const handleToggleLike = async () => {
         try {
