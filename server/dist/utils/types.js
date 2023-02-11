@@ -1,5 +1,5 @@
 "use strict";
-exports.__esModule = true;
+Object.defineProperty(exports, "__esModule", { value: true });
 exports.Viewer = exports.TypeNotification = void 0;
 var Gender;
 (function (Gender) {
@@ -20,3 +20,4 @@ var Viewer;
     Viewer[Viewer["FRIENDS"] = 1] = "FRIENDS";
     Viewer[Viewer["PRIVATE"] = 2] = "PRIVATE";
 })(Viewer = exports.Viewer || (exports.Viewer = {}));
+//# sourceMappingURL=types.js.map

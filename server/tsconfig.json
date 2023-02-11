@@ -1,11 +1,12 @@
 {
   "compilerOptions": {
-    "target": "es6",  // 👈️ set this to es6
-    "paths": {
-      "@/*": ["./src/*"]
-  }
+    "module": "commonjs",
+    "target": "es6",
+    "lib": ["es6"],
+    "sourceMap": true,
+    "outDir": "./dist",
   },
-  "include": [
+  "exclude": [
     "node_modules"
   ],
 }
