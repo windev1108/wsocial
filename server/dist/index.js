@@ -10,6 +10,29 @@ var __assign = (this && this.__assign) || function () {
     };
     return __assign.apply(this, arguments);
 };
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -46,19 +69,22 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 var schema_1 = require("@graphql-tools/schema");
 var client_1 = require("@prisma/client");
 var server_1 = require("@apollo/server");
 var express4_1 = require("@apollo/server/express4");
-var express_1 = require("express");
+var express_1 = __importDefault(require("express"));
 var http_1 = require("http");
 var react_1 = require("next-auth/react");
-var index_ts_1 = require("./graphql/resolvers/index.ts");
-var index_ts_2 = require("./graphql/schema/index.ts");
-var dotenv = require("dotenv");
-var cors_1 = require("cors");
-var body_parser_1 = require("body-parser");
+var index_ts_1 = __importDefault(require("./graphql/resolvers/index.ts"));
+var index_ts_2 = __importDefault(require("./graphql/schema/index.ts"));
+var dotenv = __importStar(require("dotenv"));
+var cors_1 = __importDefault(require("cors"));
+var body_parser_1 = __importDefault(require("body-parser"));
 var socket_io_1 = require("socket.io");
 var users = [];
 var main = function () { return __awaiter(void 0, void 0, void 0, function () {
