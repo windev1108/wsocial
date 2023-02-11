@@ -1,5 +1,7 @@
 {
   "compilerOptions": {
+    "target": "es6",  // 👈️ set this to es6
+    "module": "commonjs",
     "noPropertyAccessFromIndexSignature": false,
     "paths": {
       "@/*": ["./src/*"]
