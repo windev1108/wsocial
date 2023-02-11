@@ -22,6 +22,15 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -44,7 +53,7 @@ const cors_1 = __importDefault(require("cors"));
 const body_parser_1 = __importDefault(require("body-parser"));
 const socket_io_1 = require("socket.io");
 let users = [];
-const main = async () => {
+const main = () => __awaiter(void 0, void 0, void 0, function* () {
     dotenv.config();
     // Create the schema, which will be used separately by ApolloServer and
     // the WebSocket server.
@@ -79,12 +88,9 @@ const main = async () => {
             io.emit("users", users);
         });
         socket.on("sendMessage", ({ sender, receiverId, message }) => {
+            var _a, _b;
             socket.to(receiverId).emit("receive_message", {
-                sender: {
-                    ...sender,
-                    isOnline: users.find(u => u.userId === sender.id)?.isOnline,
-                    lastTime: users.find(u => u.userId === sender.id)?.lastTime
-                }, message
+                sender: Object.assign(Object.assign({}, sender), { isOnline: (_a = users.find(u => u.userId === sender.id)) === null || _a === void 0 ? void 0 : _a.isOnline, lastTime: (_b = users.find(u => u.userId === sender.id)) === null || _b === void 0 ? void 0 : _b.lastTime }), message
             });
         });
         socket.on("userTyping", ({ sender, receiverId, isTyping }) => {
@@ -129,20 +135,20 @@ const main = async () => {
         schema,
         csrfPrevention: true,
     });
-    await server.start();
+    yield server.start();
     const corsOptions = {
         origin: process.env.BASE_URL,
         credentials: true,
     };
     app.use("/graphql", (0, cors_1.default)(corsOptions), body_parser_1.default.json(), (0, express4_1.expressMiddleware)(server, {
-        context: async ({ req }) => {
-            const session = await (0, react_1.getSession)({ req });
+        context: ({ req }) => __awaiter(void 0, void 0, void 0, function* () {
+            const session = yield (0, react_1.getSession)({ req });
             return { session: session, prisma };
-        },
+        }),
     }));
     const PORT = process.env.PORT || 5000;
     // Now that our HTTP server is fully set up, we can listen to it.
-    await new Promise((resolve) => httpServer.listen({ port: PORT }, resolve));
+    yield new Promise((resolve) => httpServer.listen({ port: PORT }, resolve));
     console.log(`Server is now running on http://localhost:${PORT}/graphql`);
-};
+});
 main().catch((err) => console.log(err));
