@@ -1,5 +1,4 @@
 import type { PrismaClient } from "@prisma/client";
-import type { Context } from "graphql-ws/lib/server";
 
 export interface Session {
   user?: User;
@@ -10,11 +9,6 @@ export interface GraphQLContext {
   prisma: PrismaClient;
 }
 
-export interface SubscriptionContext extends Context {
-  connectionParams: {
-    session?: Session;
-  };
-}
 
 export interface SocketUser {
   userId: string
