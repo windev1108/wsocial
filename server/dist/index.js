@@ -8,7 +8,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-Object.defineProperty(exports, "__esModule", { value: true });
+Object.defineProperty(exports, "__esModule", { value: false });
 const schema_1 = require("@graphql-tools/schema");
 const client_1 = require("@prisma/client");
 // import { ApolloServerPluginDrainHttpServer } from "apollo-server-core";
