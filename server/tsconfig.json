@@ -1,7 +1,6 @@
 {
   "compilerOptions": {
     "target": "es6",  // 👈️ set this to es6
-    "noPropertyAccessFromIndexSignature": false,
     "paths": {
       "@/*": ["./src/*"]
   }
