@@ -1,35 +1,54 @@
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
+"use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
 };
-import { makeExecutableSchema } from "@graphql-tools/schema";
-import { PrismaClient } from "@prisma/client";
-import { ApolloServer } from "@apollo/server";
-import { expressMiddleware } from "@apollo/server/express4";
-import express from "express";
-import { createServer } from "http";
-import { getSession } from "next-auth/react";
-import resolvers from "./graphql/resolvers/index.ts";
-import typeDefs from "./graphql/schema/index.ts";
-import * as dotenv from "dotenv";
-import cors from "cors";
-import bodyParser from "body-parser";
-import { Server } from "socket.io";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const schema_1 = require("@graphql-tools/schema");
+const client_1 = require("@prisma/client");
+const server_1 = require("@apollo/server");
+const express4_1 = require("@apollo/server/express4");
+const express_1 = __importDefault(require("express"));
+const http_1 = require("http");
+const react_1 = require("next-auth/react");
+const index_ts_1 = __importDefault(require("./graphql/resolvers/index.ts"));
+const index_ts_2 = __importDefault(require("./graphql/schema/index.ts"));
+const dotenv = __importStar(require("dotenv"));
+const cors_1 = __importDefault(require("cors"));
+const body_parser_1 = __importDefault(require("body-parser"));
+const socket_io_1 = require("socket.io");
 let users = [];
-const main = () => __awaiter(void 0, void 0, void 0, function* () {
+const main = async () => {
     dotenv.config();
-    const schema = makeExecutableSchema({
-        typeDefs,
-        resolvers,
+    const schema = (0, schema_1.makeExecutableSchema)({
+        typeDefs: index_ts_2.default,
+        resolvers: index_ts_1.default,
     });
-    const app = express();
-    const httpServer = createServer(app);
-    const io = new Server(httpServer, {
+    const app = (0, express_1.default)();
+    const httpServer = (0, http_1.createServer)(app);
+    const io = new socket_io_1.Server(httpServer, {
         cors: {
             origin: process.env.BASE_URL,
             methods: ["GET", "POST"]
@@ -52,27 +71,16 @@ const main = () => __awaiter(void 0, void 0, void 0, function* () {
             io.emit("users", users);
         });
         socket.on("sendMessage", ({ sender, receiverId, message }) => {
-            var _a, _b;
             socket.to(receiverId).emit("receive_message", {
-                sender: Object.assign(Object.assign({}, sender), { isOnline: (_a = users.find(u => u.userId === sender.id)) === null || _a === void 0 ? void 0 : _a.isOnline, lastTime: (_b = users.find(u => u.userId === sender.id)) === null || _b === void 0 ? void 0 : _b.lastTime }), message
+                sender: {
+                    ...sender,
+                    isOnline: users.find(u => u.userId === sender.id)?.isOnline,
+                    lastTime: users.find(u => u.userId === sender.id)?.lastTime
+                }, message
             });
         });
         socket.on("userTyping", ({ sender, receiverId, isTyping }) => {
             socket.to(receiverId).emit("user-typing", { sender, isTyping });
-        });
-        socket.on("calling", ({ caller, receiverId }) => {
-            socket.to(receiverId).emit("calling", {
-                caller
-            });
-        });
-        socket.on("callAccepted", ({ peerId, callerId }) => {
-            socket.to(callerId).emit("callAccepted", { peerId });
-            console.log("acceptCall :", callerId);
-            console.log("peerId :", peerId);
-        });
-        socket.on("rejectCall", ({ callerId }) => {
-            console.log("rejectCall :", callerId);
-            socket.to(callerId).emit("rejectCall");
         });
         socket.on("updateNotification", () => {
             socket.broadcast.emit("updateNotification");
@@ -91,24 +99,24 @@ const main = () => __awaiter(void 0, void 0, void 0, function* () {
             io.emit("users", users);
         });
     });
-    const prisma = new PrismaClient();
-    const server = new ApolloServer({
+    const prisma = new client_1.PrismaClient();
+    const server = new server_1.ApolloServer({
         schema,
         csrfPrevention: true,
     });
-    yield server.start();
+    await server.start();
     const corsOptions = {
         origin: process.env.BASE_URL,
         credentials: true,
     };
-    app.use("/graphql", cors(corsOptions), bodyParser.json(), expressMiddleware(server, {
-        context: ({ req }) => __awaiter(void 0, void 0, void 0, function* () {
-            const session = yield getSession({ req });
+    app.use("/graphql", (0, cors_1.default)(corsOptions), body_parser_1.default.json(), (0, express4_1.expressMiddleware)(server, {
+        context: async ({ req }) => {
+            const session = await (0, react_1.getSession)({ req });
             return { session: session, prisma };
-        }),
+        },
     }));
     const PORT = process.env.PORT || 5000;
-    yield new Promise((resolve) => httpServer.listen({ port: PORT }, resolve));
+    await new Promise((resolve) => httpServer.listen({ port: PORT }, resolve));
     console.log(`Server is now running on http://localhost:${PORT}/graphql`);
-});
+};
 main().catch((err) => console.log(err));

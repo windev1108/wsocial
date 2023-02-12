@@ -1,22 +1,14 @@
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-import { PrismaClient } from "@prisma/client";
-import { GraphQLError } from "graphql";
-const prisma = new PrismaClient();
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const client_1 = require("@prisma/client");
+const graphql_1 = require("graphql");
+const prisma = new client_1.PrismaClient();
 const resolvers = {
     Query: {
-        getUsers: () => __awaiter(void 0, void 0, void 0, function* () { return yield prisma.user.findMany(); }),
-        getUserById: (_parent, { id }, context) => __awaiter(void 0, void 0, void 0, function* () {
-            var _a;
+        getUsers: async () => await prisma.user.findMany(),
+        getUserById: async (_parent, { id }, context) => {
             const { prisma, session } = context;
-            const user = yield prisma.user.findUnique({
+            const user = await prisma.user.findUnique({
                 where: {
                     id: id,
                 },
@@ -61,20 +53,25 @@ const resolvers = {
                     },
                 },
             });
-            return Object.assign(Object.assign({}, user), { isMySelf: id === ((_a = session === null || session === void 0 ? void 0 : session.user) === null || _a === void 0 ? void 0 : _a.id), isFriend: user === null || user === void 0 ? void 0 : user.friends.some((user) => { var _a; return user.id === ((_a = session === null || session === void 0 ? void 0 : session.user) === null || _a === void 0 ? void 0 : _a.id); }), isSendAddFriend: user === null || user === void 0 ? void 0 : user.notificationsTo.some((notification) => notification.toUserId === id &&
-                    notification.fromUsers.some((user) => { var _a; return user.id === ((_a = session === null || session === void 0 ? void 0 : session.user) === null || _a === void 0 ? void 0 : _a.id); }) &&
-                    notification.type === "ADD_FRIEND"), isReceiveAddFriend: user === null || user === void 0 ? void 0 : user.notificationsFrom.some((notification) => {
-                    var _a;
-                    return notification.toUserId === ((_a = session === null || session === void 0 ? void 0 : session.user) === null || _a === void 0 ? void 0 : _a.id) &&
-                        notification.fromUsers.some((user) => user.id === id) &&
-                        notification.type === "ADD_FRIEND";
-                }), isFollowing: user === null || user === void 0 ? void 0 : user.followers.some((user) => { var _a; return user.id === ((_a = session === null || session === void 0 ? void 0 : session.user) === null || _a === void 0 ? void 0 : _a.id); }), _count: {
-                    followers: user === null || user === void 0 ? void 0 : user._count.followers,
-                    followings: user === null || user === void 0 ? void 0 : user._count.followings,
-                } });
-        }),
-        getPosts: (_parent, { userId }) => __awaiter(void 0, void 0, void 0, function* () {
-            const { friends, followings } = yield prisma.user.findUnique({
+            return {
+                ...user,
+                isMySelf: id === session?.user?.id,
+                isFriend: user?.friends.some((user) => user.id === session?.user?.id),
+                isSendAddFriend: user?.notificationsTo.some((notification) => notification.toUserId === id &&
+                    notification.fromUsers.some((user) => user.id === session?.user?.id) &&
+                    notification.type === "ADD_FRIEND"),
+                isReceiveAddFriend: user?.notificationsFrom.some((notification) => notification.toUserId === session?.user?.id &&
+                    notification.fromUsers.some((user) => user.id === id) &&
+                    notification.type === "ADD_FRIEND"),
+                isFollowing: user?.followers.some((user) => user.id === session?.user?.id),
+                _count: {
+                    followers: user?._count.followers,
+                    followings: user?._count.followings,
+                }
+            };
+        },
+        getPosts: async (_parent, { userId }) => {
+            const { friends, followings } = await prisma.user.findUnique({
                 where: {
                     id: userId,
                 },
@@ -91,7 +88,7 @@ const resolvers = {
                     },
                 },
             });
-            const posts = yield prisma.post.findMany({
+            const posts = await prisma.post.findMany({
                 orderBy: {
                     createdAt: "desc",
                 },
@@ -110,34 +107,35 @@ const resolvers = {
                 (post.authorId === userId && post.viewer === "PRIVATE") ||
                 userId === post.authorId)
                 .map((post) => {
-                return Object.assign(Object.assign({}, post), { isMySelf: post.authorId !== userId && post.viewer === "PRIVATE" });
+                return {
+                    ...post,
+                    isMySelf: post.authorId !== userId && post.viewer === "PRIVATE",
+                };
             });
             return customPosts.filter((post) => !post.isMySelf);
-        }),
-        getPostById: (_parent, args) => __awaiter(void 0, void 0, void 0, function* () {
-            return yield prisma.post.findUnique({
-                where: {
-                    id: args.id,
-                },
-                include: {
-                    _count: {
-                        select: {
-                            comments: true,
-                            postShared: true,
-                        },
+        },
+        getPostById: async (_parent, args) => await prisma.post.findUnique({
+            where: {
+                id: args.id,
+            },
+            include: {
+                _count: {
+                    select: {
+                        comments: true,
+                        postShared: true,
                     },
                 },
-            });
+            },
         }),
-        findConversation: (_, _args, context) => __awaiter(void 0, void 0, void 0, function* () {
+        findConversation: async (_, _args, context) => {
             const { session, prisma } = context;
-            if (!(session === null || session === void 0 ? void 0 : session.user)) {
-                throw new GraphQLError("Not authorized");
+            if (!session?.user) {
+                throw new graphql_1.GraphQLError("Not authorized");
             }
             try {
                 const { id } = session.user;
                 const { userId } = _args;
-                const conversations = yield prisma.conversation.findMany({
+                const conversations = await prisma.conversation.findMany({
                     include: {
                         messages: {
                             select: {
@@ -169,22 +167,21 @@ const resolvers = {
                 return conversations.find((conversation) => conversation.participants.some((p) => p.id === id) && conversation.participants.some((p) => p.id === userId));
             }
             catch (error) {
-                throw new GraphQLError(error === null || error === void 0 ? void 0 : error.message);
+                throw new graphql_1.GraphQLError(error?.message);
             }
-        }),
-        conversations: (_parent, _args, context) => __awaiter(void 0, void 0, void 0, function* () {
-            var _b;
+        },
+        conversations: async (_parent, _args, context) => {
             try {
                 const { prisma, session } = context;
-                if (!(session === null || session === void 0 ? void 0 : session.user)) {
-                    throw new GraphQLError("Not authorized");
+                if (!session?.user) {
+                    throw new graphql_1.GraphQLError("Not authorized");
                 }
-                const conversations = yield prisma.conversation.findMany({
+                const conversations = await prisma.conversation.findMany({
                     where: {
                         participants: {
                             some: {
                                 id: {
-                                    equals: (_b = session === null || session === void 0 ? void 0 : session.user) === null || _b === void 0 ? void 0 : _b.id
+                                    equals: session?.user?.id
                                 }
                             }
                         },
@@ -213,20 +210,25 @@ const resolvers = {
                     }
                 });
                 return conversations.map((conversation) => {
-                    return Object.assign(Object.assign({}, conversation), { latestMessage: conversation.messages[0], _count: {
-                            messages: conversation.messages.filter((message) => { var _a; return (message === null || message === void 0 ? void 0 : message.senderId) !== ((_a = session === null || session === void 0 ? void 0 : session.user) === null || _a === void 0 ? void 0 : _a.id); }).length
-                        }, user: conversation.participants.filter((user) => { var _a; return (user === null || user === void 0 ? void 0 : user.id) !== ((_a = session === null || session === void 0 ? void 0 : session.user) === null || _a === void 0 ? void 0 : _a.id); })[0] });
+                    return {
+                        ...conversation,
+                        latestMessage: conversation.messages[0],
+                        _count: {
+                            messages: conversation.messages.filter((message) => message?.senderId !== session?.user?.id).length
+                        },
+                        user: conversation.participants.filter((user) => user?.id !== session?.user?.id)[0]
+                    };
                 });
             }
             catch (error) {
-                throw new GraphQLError(error.message);
+                throw new graphql_1.GraphQLError(error.message);
             }
-        })
+        }
     },
     User: {
-        posts: (_parent, { isMySelf, isFriend }) => __awaiter(void 0, void 0, void 0, function* () {
+        posts: async (_parent, { isMySelf, isFriend }) => {
             if (isMySelf) {
-                const posts = yield prisma.post.findMany({
+                const posts = await prisma.post.findMany({
                     where: {
                         authorId: _parent.id,
                     },
@@ -245,7 +247,7 @@ const resolvers = {
                 return posts;
             }
             else if (isFriend) {
-                const posts = yield prisma.post.findMany({
+                const posts = await prisma.post.findMany({
                     where: {
                         authorId: _parent.id,
                         viewer: {
@@ -267,7 +269,7 @@ const resolvers = {
                 return posts;
             }
             else {
-                const posts = yield prisma.post.findMany({
+                const posts = await prisma.post.findMany({
                     where: {
                         authorId: _parent.id,
                         viewer: {
@@ -288,18 +290,17 @@ const resolvers = {
                 });
                 return posts;
             }
-        }),
-        friends: (_parent, _args) => __awaiter(void 0, void 0, void 0, function* () {
-            const user = yield prisma.user.findUnique({
+        },
+        friends: async (_parent, _args) => {
+            const user = await prisma.user.findUnique({
                 where: { id: _parent.id },
                 select: { friends: true },
             });
-            return user === null || user === void 0 ? void 0 : user.friends;
-        }),
-        notFriends: (_parent, _args, context) => __awaiter(void 0, void 0, void 0, function* () {
-            var _c;
+            return user?.friends;
+        },
+        notFriends: async (_parent, _args, context) => {
             const { prisma, session } = context;
-            const users = yield prisma.user.findMany({
+            const users = await prisma.user.findMany({
                 where: {
                     OR: {
                         friends: {
@@ -313,9 +314,9 @@ const resolvers = {
                     },
                 },
             });
-            const userSession = yield prisma.user.findFirst({
+            const userSession = await prisma.user.findFirst({
                 where: {
-                    id: (_c = session === null || session === void 0 ? void 0 : session.user) === null || _c === void 0 ? void 0 : _c.id,
+                    id: session?.user?.id,
                 },
                 select: {
                     notificationsFrom: {
@@ -343,27 +344,31 @@ const resolvers = {
                 }
             });
             return users.map((user) => {
-                return Object.assign(Object.assign({}, user), { isSendAddFriend: userSession === null || userSession === void 0 ? void 0 : userSession.notificationsFrom.some((notification) => notification.type === "ADD_FRIEND" && notification.toUserId === user.id), isReceiveAddFriend: userSession === null || userSession === void 0 ? void 0 : userSession.notificationsTo.some((notification) => notification.toUserId === _parent.id &&
+                return {
+                    ...user,
+                    isSendAddFriend: userSession?.notificationsFrom.some((notification) => notification.type === "ADD_FRIEND" && notification.toUserId === user.id),
+                    isReceiveAddFriend: userSession?.notificationsTo.some((notification) => notification.toUserId === _parent.id &&
                         notification.fromUsers.some((u) => u.id === user.id) &&
-                        notification.type === "ADD_FRIEND") });
+                        notification.type === "ADD_FRIEND"),
+                };
             });
-        }),
-        followers: (_parent, _args) => __awaiter(void 0, void 0, void 0, function* () {
-            const user = yield prisma.user.findUnique({
+        },
+        followers: async (_parent, _args) => {
+            const user = await prisma.user.findUnique({
                 where: { id: _parent.id },
                 select: { followers: true },
             });
-            return user === null || user === void 0 ? void 0 : user.followers;
-        }),
-        followings: (_parent, _args) => __awaiter(void 0, void 0, void 0, function* () {
-            const user = yield prisma.user.findUnique({
+            return user?.followers;
+        },
+        followings: async (_parent, _args) => {
+            const user = await prisma.user.findUnique({
                 where: { id: _parent.id },
                 select: { followings: true },
             });
-            return user === null || user === void 0 ? void 0 : user.followings;
-        }),
-        notificationsFrom: (_parent, _args) => __awaiter(void 0, void 0, void 0, function* () {
-            const user = yield prisma.user.findUnique({
+            return user?.followings;
+        },
+        notificationsFrom: async (_parent, _args) => {
+            const user = await prisma.user.findUnique({
                 where: {
                     id: _parent.id,
                 },
@@ -381,10 +386,10 @@ const resolvers = {
                     },
                 },
             });
-            return user === null || user === void 0 ? void 0 : user.notificationsFrom;
-        }),
-        notificationsTo: (_parent, _args) => __awaiter(void 0, void 0, void 0, function* () {
-            const user = yield prisma.user.findUnique({
+            return user?.notificationsFrom;
+        },
+        notificationsTo: async (_parent, _args) => {
+            const user = await prisma.user.findUnique({
                 where: {
                     id: _parent.id,
                 },
@@ -412,19 +417,17 @@ const resolvers = {
                     },
                 },
             });
-            return user === null || user === void 0 ? void 0 : user.notificationsTo;
-        }),
+            return user?.notificationsTo;
+        },
     },
     Post: {
-        author: (_parent, _args) => __awaiter(void 0, void 0, void 0, function* () {
-            return yield prisma.user.findUnique({
-                where: {
-                    id: _parent.authorId,
-                },
-            });
+        author: async (_parent, _args) => await prisma.user.findUnique({
+            where: {
+                id: _parent.authorId,
+            },
         }),
-        likes: (_parent, _args) => __awaiter(void 0, void 0, void 0, function* () {
-            const post = yield prisma.post.findUnique({
+        likes: async (_parent, _args) => {
+            const post = await prisma.post.findUnique({
                 where: {
                     id: _parent.id,
                 },
@@ -438,21 +441,19 @@ const resolvers = {
                     },
                 },
             });
-            return post === null || post === void 0 ? void 0 : post.likes;
+            return post?.likes;
+        },
+        files: async (_parent, _args) => await prisma.file.findMany({
+            where: {
+                postId: _parent.id,
+            },
         }),
-        files: (_parent, _args) => __awaiter(void 0, void 0, void 0, function* () {
-            return yield prisma.file.findMany({
-                where: {
-                    postId: _parent.id,
-                },
-            });
-        }),
-        comments: (_parent, _args, context) => __awaiter(void 0, void 0, void 0, function* () {
+        comments: async (_parent, _args, context) => {
             const { prisma, session } = context;
-            if (!(session === null || session === void 0 ? void 0 : session.user)) {
-                throw new GraphQLError("Not authorized");
+            if (!session?.user) {
+                throw new graphql_1.GraphQLError("Not authorized");
             }
-            const post = yield prisma.post.findUnique({
+            const post = await prisma.post.findUnique({
                 where: {
                     id: _parent.id,
                 },
@@ -544,11 +545,11 @@ const resolvers = {
                     },
                 },
             });
-            return post === null || post === void 0 ? void 0 : post.comments.filter((comment) => comment.commentOf.length === 0);
-        }),
-        postSharedOf: (_parent, _args, context) => __awaiter(void 0, void 0, void 0, function* () {
+            return post?.comments.filter((comment) => comment.commentOf.length === 0);
+        },
+        postSharedOf: async (_parent, _args, context) => {
             const { prisma } = context;
-            const post = yield prisma.post.findUnique({
+            const post = await prisma.post.findUnique({
                 where: {
                     id: _parent.id,
                 },
@@ -582,35 +583,34 @@ const resolvers = {
                     },
                 },
             });
-            return post === null || post === void 0 ? void 0 : post.postSharedOf[0];
-        }),
+            return post?.postSharedOf[0];
+        },
     },
     Mutation: {
-        addFriendship: (_parent, { userIdB }, context) => __awaiter(void 0, void 0, void 0, function* () {
-            var _d, _e, _f, _g, _h;
+        addFriendship: async (_parent, { userIdB }, context) => {
             const { prisma, session } = context;
-            if (!(session === null || session === void 0 ? void 0 : session.user)) {
-                throw new GraphQLError("Not authorized");
+            if (!session?.user) {
+                throw new graphql_1.GraphQLError("Not authorized");
             }
-            const userASuccess = yield prisma.user.update({
-                where: { id: (_d = session === null || session === void 0 ? void 0 : session.user) === null || _d === void 0 ? void 0 : _d.id },
+            const userASuccess = await prisma.user.update({
+                where: { id: session?.user?.id },
                 data: { friends: { connect: [{ id: userIdB }] } },
             });
-            const userBSuccess = yield prisma.user.update({
+            const userBSuccess = await prisma.user.update({
                 where: { id: userIdB },
-                data: { friends: { connect: [{ id: (_e = session === null || session === void 0 ? void 0 : session.user) === null || _e === void 0 ? void 0 : _e.id }] } },
+                data: { friends: { connect: [{ id: session?.user?.id }] } },
             });
-            yield prisma.user.update({
-                where: { id: (_f = session === null || session === void 0 ? void 0 : session.user) === null || _f === void 0 ? void 0 : _f.id },
+            await prisma.user.update({
+                where: { id: session?.user?.id },
                 data: { followings: { connect: [{ id: userIdB }] } },
             });
-            yield prisma.user.update({
-                where: { id: (_g = session === null || session === void 0 ? void 0 : session.user) === null || _g === void 0 ? void 0 : _g.id },
+            await prisma.user.update({
+                where: { id: session?.user?.id },
                 data: { followers: { connect: [{ id: userIdB }] } },
             });
-            const notification = yield prisma.notification.findFirst({
+            const notification = await prisma.notification.findFirst({
                 where: {
-                    toUserId: (_h = session === null || session === void 0 ? void 0 : session.user) === null || _h === void 0 ? void 0 : _h.id,
+                    toUserId: session?.user?.id,
                     fromUsers: {
                         every: {
                             id: userIdB,
@@ -622,58 +622,60 @@ const resolvers = {
                     id: true,
                 },
             });
-            yield prisma.notification.delete({
+            await prisma.notification.delete({
                 where: {
-                    id: notification === null || notification === void 0 ? void 0 : notification.id,
+                    id: notification?.id,
                 },
             });
             return {
                 success: true,
                 message: `${userASuccess.name} and  ${userBSuccess.name} have become friends`,
             };
-        }),
-        removeFriendship: (_parent, { userIdB }, context) => __awaiter(void 0, void 0, void 0, function* () {
-            var _j, _k, _l, _m;
+        },
+        removeFriendship: async (_parent, { userIdB }, context) => {
             const { prisma, session } = context;
-            if (!(session === null || session === void 0 ? void 0 : session.user)) {
-                throw new GraphQLError("Not authorized");
+            if (!session?.user) {
+                throw new graphql_1.GraphQLError("Not authorized");
             }
-            const userASuccess = yield prisma.user.update({
-                where: { id: (_j = session === null || session === void 0 ? void 0 : session.user) === null || _j === void 0 ? void 0 : _j.id },
+            const userASuccess = await prisma.user.update({
+                where: { id: session?.user?.id },
                 data: { friends: { disconnect: [{ id: userIdB }] } },
             });
-            const userBSuccess = yield prisma.user.update({
+            const userBSuccess = await prisma.user.update({
                 where: { id: userIdB },
                 data: {
-                    friends: { disconnect: [{ id: (_k = session === null || session === void 0 ? void 0 : session.user) === null || _k === void 0 ? void 0 : _k.id }] },
+                    friends: { disconnect: [{ id: session?.user?.id }] },
                 },
             });
-            yield prisma.user.update({
-                where: { id: (_l = session === null || session === void 0 ? void 0 : session.user) === null || _l === void 0 ? void 0 : _l.id },
+            await prisma.user.update({
+                where: { id: session?.user?.id },
                 data: { followings: { disconnect: [{ id: userIdB }] } },
             });
-            yield prisma.user.update({
-                where: { id: (_m = session === null || session === void 0 ? void 0 : session.user) === null || _m === void 0 ? void 0 : _m.id },
+            await prisma.user.update({
+                where: { id: session?.user?.id },
                 data: { followers: { disconnect: [{ id: userIdB }] } },
             });
             return {
                 success: true,
                 message: `${userASuccess.name} and  ${userBSuccess.name} have become strangers`,
             };
-        }),
-        createPost: (_parent, { post }, context) => __awaiter(void 0, void 0, void 0, function* () {
-            var _o, _p, _q, _r, _s;
+        },
+        createPost: async (_parent, { post }, context) => {
             const { prisma, session } = context;
-            if (!(session === null || session === void 0 ? void 0 : session.user)) {
-                throw new GraphQLError("Not authorized");
+            if (!session?.user) {
+                throw new graphql_1.GraphQLError("Not authorized");
             }
             if (post.files) {
-                yield prisma.post.create({
-                    data: Object.assign(Object.assign({}, post), { authorId: (_o = session === null || session === void 0 ? void 0 : session.user) === null || _o === void 0 ? void 0 : _o.id, files: {
+                await prisma.post.create({
+                    data: {
+                        ...post,
+                        authorId: session?.user?.id,
+                        files: {
                             createMany: {
                                 data: post.files,
                             },
-                        } }),
+                        },
+                    },
                     include: {
                         files: true,
                     },
@@ -681,11 +683,11 @@ const resolvers = {
             }
             else {
                 if (post.postIdShared) {
-                    const postShared = yield prisma.post.create({
+                    const postShared = await prisma.post.create({
                         data: {
                             content: post.content,
                             viewer: post.viewer,
-                            authorId: (_p = session === null || session === void 0 ? void 0 : session.user) === null || _p === void 0 ? void 0 : _p.id,
+                            authorId: session?.user?.id,
                             activity: "CREATED_POST",
                             postSharedOf: {
                                 connect: {
@@ -703,24 +705,24 @@ const resolvers = {
                             },
                         },
                     });
-                    yield prisma.post.update({
+                    await prisma.post.update({
                         where: {
                             id: post.postIdShared,
                         },
                         data: {
                             postShared: {
                                 connect: {
-                                    id: postShared === null || postShared === void 0 ? void 0 : postShared.id,
+                                    id: postShared?.id,
                                 },
                             },
                         },
                     });
-                    if (postShared.authorId !== (session === null || session === void 0 ? void 0 : session.user.id)) {
-                        const notification = yield prisma.notification.findFirst({
+                    if (postShared.authorId !== session?.user.id) {
+                        const notification = await prisma.notification.findFirst({
                             where: {
                                 fromUsers: {
                                     some: {
-                                        id: (_q = session === null || session === void 0 ? void 0 : session.user) === null || _q === void 0 ? void 0 : _q.id,
+                                        id: session?.user?.id,
                                     },
                                 },
                                 toUserId: postShared.postSharedOf[0].authorId,
@@ -732,7 +734,7 @@ const resolvers = {
                             },
                         });
                         if (notification) {
-                            yield prisma.notification.update({
+                            await prisma.notification.update({
                                 where: {
                                     id: notification.id,
                                 },
@@ -742,11 +744,11 @@ const resolvers = {
                             });
                         }
                         else {
-                            yield prisma.notification.create({
+                            await prisma.notification.create({
                                 data: {
                                     fromUsers: {
                                         connect: {
-                                            id: (_r = session === null || session === void 0 ? void 0 : session.user) === null || _r === void 0 ? void 0 : _r.id,
+                                            id: session?.user?.id,
                                         },
                                     },
                                     toUserId: postShared.postSharedOf[0].authorId,
@@ -762,8 +764,11 @@ const resolvers = {
                     };
                 }
                 else {
-                    yield prisma.post.create({
-                        data: Object.assign(Object.assign({}, post), { authorId: (_s = session === null || session === void 0 ? void 0 : session.user) === null || _s === void 0 ? void 0 : _s.id }),
+                    await prisma.post.create({
+                        data: {
+                            ...post,
+                            authorId: session?.user?.id,
+                        },
                     });
                     return {
                         success: true,
@@ -771,36 +776,42 @@ const resolvers = {
                     };
                 }
             }
-        }),
-        updatePost: (_parent, { id, post }, context) => __awaiter(void 0, void 0, void 0, function* () {
+        },
+        updatePost: async (_parent, { id, post }, context) => {
             const { prisma, session } = context;
-            if (!(session === null || session === void 0 ? void 0 : session.user)) {
-                throw new GraphQLError("Not authorized");
+            if (!session?.user) {
+                throw new graphql_1.GraphQLError("Not authorized");
             }
             if (post.files) {
-                yield prisma.post.update({
+                await prisma.post.update({
                     where: {
                         id,
                     },
-                    data: Object.assign(Object.assign({}, post), { files: {
+                    data: {
+                        ...post,
+                        files: {
                             deleteMany: {},
                             createMany: {
                                 data: post.files,
                             },
-                        } }),
+                        },
+                    },
                     include: {
                         files: true,
                     },
                 });
             }
             else {
-                yield prisma.post.update({
+                await prisma.post.update({
                     where: {
                         id,
                     },
-                    data: Object.assign(Object.assign({}, post), { files: {
+                    data: {
+                        ...post,
+                        files: {
                             deleteMany: {},
-                        } }),
+                        },
+                    },
                     include: {
                         files: true,
                     },
@@ -810,9 +821,9 @@ const resolvers = {
                 success: true,
                 message: "Updated post successfully",
             };
-        }),
-        deletePost: (_parent, { id }) => __awaiter(void 0, void 0, void 0, function* () {
-            yield prisma.post.delete({
+        },
+        deletePost: async (_parent, { id }) => {
+            await prisma.post.delete({
                 where: {
                     id,
                 },
@@ -821,14 +832,13 @@ const resolvers = {
                 success: true,
                 message: "Deleted post successfully",
             };
-        }),
-        updateUser: (_parent, { user }, context) => __awaiter(void 0, void 0, void 0, function* () {
-            var _t;
+        },
+        updateUser: async (_parent, { user }, context) => {
             try {
                 const { session } = context;
-                const userUpdate = yield prisma.user.update({
+                const userUpdate = await prisma.user.update({
                     where: {
-                        id: (_t = session === null || session === void 0 ? void 0 : session.user) === null || _t === void 0 ? void 0 : _t.id,
+                        id: session?.user?.id,
                     },
                     data: user,
                 });
@@ -851,21 +861,21 @@ const resolvers = {
                     message: error.message,
                 };
             }
-        }),
-        toggleLikePost: (_parent, { postId, authorId, isLiked, }, context) => __awaiter(void 0, void 0, void 0, function* () {
+        },
+        toggleLikePost: async (_parent, { postId, authorId, isLiked, }, context) => {
             const { session, prisma } = context;
-            if (!(session === null || session === void 0 ? void 0 : session.user)) {
-                throw new GraphQLError("Not authorized");
+            if (!session?.user) {
+                throw new graphql_1.GraphQLError("Not authorized");
             }
             if (isLiked) {
-                yield prisma.post.update({
+                await prisma.post.update({
                     where: {
                         id: postId,
                     },
                     data: {
                         likes: {
                             disconnect: {
-                                id: session === null || session === void 0 ? void 0 : session.user.id,
+                                id: session?.user.id,
                             },
                         },
                     },
@@ -876,20 +886,20 @@ const resolvers = {
                 };
             }
             else {
-                yield prisma.post.update({
+                await prisma.post.update({
                     where: {
                         id: postId,
                     },
                     data: {
                         likes: {
                             connect: {
-                                id: session === null || session === void 0 ? void 0 : session.user.id,
+                                id: session?.user.id,
                             },
                         },
                     },
                 });
-                if (authorId !== (session === null || session === void 0 ? void 0 : session.user.id)) {
-                    const notification = yield prisma.notification.findFirst({
+                if (authorId !== session?.user.id) {
+                    const notification = await prisma.notification.findFirst({
                         where: {
                             toUserId: authorId,
                             postId,
@@ -897,11 +907,11 @@ const resolvers = {
                         },
                     });
                     if (!notification) {
-                        yield prisma.notification.create({
+                        await prisma.notification.create({
                             data: {
                                 fromUsers: {
                                     connect: {
-                                        id: session === null || session === void 0 ? void 0 : session.user.id,
+                                        id: session?.user.id,
                                     },
                                 },
                                 toUserId: authorId,
@@ -911,14 +921,14 @@ const resolvers = {
                         });
                     }
                     else {
-                        yield prisma.notification.update({
+                        await prisma.notification.update({
                             where: {
                                 id: notification.id,
                             },
                             data: {
                                 fromUsers: {
                                     connect: {
-                                        id: session === null || session === void 0 ? void 0 : session.user.id,
+                                        id: session?.user.id,
                                     },
                                 },
                                 updatedAt: new Date(),
@@ -931,22 +941,21 @@ const resolvers = {
                     message: "Like post success",
                 };
             }
-        }),
-        toggleLikeComment: (_parent, { commentId, postId, authorId, isLiked, }, context) => __awaiter(void 0, void 0, void 0, function* () {
-            var _u, _v, _w;
+        },
+        toggleLikeComment: async (_parent, { commentId, postId, authorId, isLiked, }, context) => {
             const { prisma, session } = context;
-            if (!(session === null || session === void 0 ? void 0 : session.user)) {
-                throw new GraphQLError("Not authorized");
+            if (!session?.user) {
+                throw new graphql_1.GraphQLError("Not authorized");
             }
             if (isLiked) {
-                yield prisma.comment.update({
+                await prisma.comment.update({
                     where: {
                         id: commentId,
                     },
                     data: {
                         likes: {
                             disconnect: {
-                                id: (_u = session === null || session === void 0 ? void 0 : session.user) === null || _u === void 0 ? void 0 : _u.id,
+                                id: session?.user?.id,
                             },
                         },
                     },
@@ -957,20 +966,20 @@ const resolvers = {
                 };
             }
             else {
-                yield prisma.comment.update({
+                await prisma.comment.update({
                     where: {
                         id: commentId,
                     },
                     data: {
                         likes: {
                             connect: {
-                                id: (_v = session === null || session === void 0 ? void 0 : session.user) === null || _v === void 0 ? void 0 : _v.id,
+                                id: session?.user?.id,
                             },
                         },
                     },
                 });
-                if (authorId !== (session === null || session === void 0 ? void 0 : session.user.id)) {
-                    const notification = yield prisma.notification.findFirst({
+                if (authorId !== session?.user.id) {
+                    const notification = await prisma.notification.findFirst({
                         where: {
                             toUserId: authorId,
                             type: "COMMENT_REPLY",
@@ -978,28 +987,28 @@ const resolvers = {
                         },
                     });
                     if (!notification) {
-                        yield prisma.notification.create({
+                        await prisma.notification.create({
                             data: {
                                 toUserId: authorId,
                                 type: "LIKE_POST",
                                 postId,
                                 fromUsers: {
                                     connect: {
-                                        id: (_w = session === null || session === void 0 ? void 0 : session.user) === null || _w === void 0 ? void 0 : _w.id,
+                                        id: session?.user?.id,
                                     },
                                 },
                             },
                         });
                     }
                     else {
-                        yield prisma.notification.update({
+                        await prisma.notification.update({
                             where: {
                                 id: notification.id,
                             },
                             data: {
                                 fromUsers: {
                                     connect: {
-                                        id: session === null || session === void 0 ? void 0 : session.user.id,
+                                        id: session?.user.id,
                                     },
                                 },
                                 updatedAt: new Date(),
@@ -1012,26 +1021,25 @@ const resolvers = {
                     message: "Like comment success",
                 };
             }
-        }),
-        followUser: (_parent, { followingId, }, context) => __awaiter(void 0, void 0, void 0, function* () {
-            var _x, _y, _z, _0, _1;
+        },
+        followUser: async (_parent, { followingId, }, context) => {
             const { prisma, session } = context;
-            if (!(session === null || session === void 0 ? void 0 : session.user)) {
-                throw new GraphQLError("Not authorized");
+            if (!session?.user) {
+                throw new graphql_1.GraphQLError("Not authorized");
             }
-            const follower = yield prisma.user.update({
-                where: { id: (_x = session === null || session === void 0 ? void 0 : session.user) === null || _x === void 0 ? void 0 : _x.id },
+            const follower = await prisma.user.update({
+                where: { id: session?.user?.id },
                 data: { followings: { connect: [{ id: followingId }] } },
             });
-            const following = yield prisma.user.update({
+            const following = await prisma.user.update({
                 where: { id: followingId },
-                data: { followers: { connect: [{ id: (_y = session === null || session === void 0 ? void 0 : session.user) === null || _y === void 0 ? void 0 : _y.id }] } },
+                data: { followers: { connect: [{ id: session?.user?.id }] } },
             });
-            const notification = yield prisma.notification.findFirst({
+            const notification = await prisma.notification.findFirst({
                 where: {
                     fromUsers: {
                         some: {
-                            id: (_z = session === null || session === void 0 ? void 0 : session.user) === null || _z === void 0 ? void 0 : _z.id
+                            id: session?.user?.id
                         },
                     },
                     toUserId: followingId,
@@ -1042,14 +1050,14 @@ const resolvers = {
                 }
             });
             if (notification) {
-                yield prisma.notification.update({
+                await prisma.notification.update({
                     where: {
                         id: notification.id
                     },
                     data: {
                         fromUsers: {
                             connect: {
-                                id: (_0 = session === null || session === void 0 ? void 0 : session.user) === null || _0 === void 0 ? void 0 : _0.id
+                                id: session?.user?.id
                             }
                         },
                         updatedAt: new Date()
@@ -1057,12 +1065,12 @@ const resolvers = {
                 });
             }
             else {
-                yield prisma.notification.create({
+                await prisma.notification.create({
                     data: {
                         toUserId: followingId,
                         fromUsers: {
                             connect: {
-                                id: (_1 = session === null || session === void 0 ? void 0 : session.user) === null || _1 === void 0 ? void 0 : _1.id
+                                id: session?.user?.id
                             }
                         },
                         type: "FOLLOW_USER"
@@ -1073,39 +1081,37 @@ const resolvers = {
                 success: true,
                 message: `${follower.name} following ${following.name}`,
             };
-        }),
-        unFollowUser: (_parent, { followingId }, context) => __awaiter(void 0, void 0, void 0, function* () {
-            var _2, _3;
+        },
+        unFollowUser: async (_parent, { followingId }, context) => {
             const { prisma, session } = context;
-            if (!(session === null || session === void 0 ? void 0 : session.user)) {
-                throw new GraphQLError("Not authorized");
+            if (!session?.user) {
+                throw new graphql_1.GraphQLError("Not authorized");
             }
-            const follower = yield prisma.user.update({
-                where: { id: (_2 = session === null || session === void 0 ? void 0 : session.user) === null || _2 === void 0 ? void 0 : _2.id },
+            const follower = await prisma.user.update({
+                where: { id: session?.user?.id },
                 data: { followings: { disconnect: [{ id: followingId }] } },
             });
-            const following = yield prisma.user.update({
+            const following = await prisma.user.update({
                 where: { id: followingId },
                 data: {
-                    followers: { disconnect: [{ id: (_3 = session === null || session === void 0 ? void 0 : session.user) === null || _3 === void 0 ? void 0 : _3.id }] },
+                    followers: { disconnect: [{ id: session?.user?.id }] },
                 },
             });
             return {
                 success: true,
                 message: `${follower.name} unFollow ${following.name}`,
             };
-        }),
-        createNotification: (_parent, { notification }, context) => __awaiter(void 0, void 0, void 0, function* () {
-            var _4;
+        },
+        createNotification: async (_parent, { notification }, context) => {
             const { prisma, session } = context;
-            if (!(session === null || session === void 0 ? void 0 : session.user)) {
-                throw new GraphQLError("Not authorized");
+            if (!session?.user) {
+                throw new graphql_1.GraphQLError("Not authorized");
             }
-            yield prisma.notification.create({
+            await prisma.notification.create({
                 data: {
                     fromUsers: {
                         connect: {
-                            id: (_4 = session === null || session === void 0 ? void 0 : session.user) === null || _4 === void 0 ? void 0 : _4.id,
+                            id: session?.user?.id,
                         },
                     },
                     toUserId: notification.toUserId,
@@ -1117,26 +1123,26 @@ const resolvers = {
                 success: true,
                 message: "Create notification successfully",
             };
-        }),
-        deleteNotification: (_parent, { id, userId }, context) => __awaiter(void 0, void 0, void 0, function* () {
+        },
+        deleteNotification: async (_parent, { id, userId }, context) => {
             const { prisma, session } = context;
-            if (!(session === null || session === void 0 ? void 0 : session.user)) {
-                throw new GraphQLError("Not authorized");
+            if (!session?.user) {
+                throw new graphql_1.GraphQLError("Not authorized");
             }
             if (id) {
-                yield prisma.notification.delete({
+                await prisma.notification.delete({
                     where: {
                         id,
                     },
                 });
             }
             else {
-                const notification = yield prisma.notification.findFirst({
+                const notification = await prisma.notification.findFirst({
                     where: {
                         toUserId: userId,
                         fromUsers: {
                             every: {
-                                id: session === null || session === void 0 ? void 0 : session.user.id,
+                                id: session?.user.id,
                             },
                         },
                         type: "ADD_FRIEND"
@@ -1145,9 +1151,9 @@ const resolvers = {
                         id: true,
                     },
                 });
-                yield prisma.notification.delete({
+                await prisma.notification.delete({
                     where: {
-                        id: notification === null || notification === void 0 ? void 0 : notification.id,
+                        id: notification?.id,
                     },
                 });
             }
@@ -1155,18 +1161,17 @@ const resolvers = {
                 success: true,
                 message: "Delete notification successfully",
             };
-        }),
-        createComment: (_parent, { comment, authorId }, context) => __awaiter(void 0, void 0, void 0, function* () {
-            var _5, _6, _7, _8, _9, _10, _11, _12, _13, _14;
+        },
+        createComment: async (_parent, { comment, authorId }, context) => {
             const { prisma, session } = context;
             const { parentId, content, file, postId, replyUserId } = comment;
             try {
-                if (!(session === null || session === void 0 ? void 0 : session.user)) {
-                    throw new GraphQLError("Not authorized");
+                if (!session?.user) {
+                    throw new graphql_1.GraphQLError("Not authorized");
                 }
                 if (replyUserId) {
-                    if (authorId !== ((_5 = session === null || session === void 0 ? void 0 : session.user) === null || _5 === void 0 ? void 0 : _5.id)) {
-                        const notification = yield prisma.notification.findFirst({
+                    if (authorId !== session?.user?.id) {
+                        const notification = await prisma.notification.findFirst({
                             where: {
                                 toUserId: replyUserId,
                                 type: "COMMENT_REPLY",
@@ -1177,11 +1182,11 @@ const resolvers = {
                             },
                         });
                         if (!notification) {
-                            yield prisma.notification.create({
+                            await prisma.notification.create({
                                 data: {
                                     fromUsers: {
                                         connect: {
-                                            id: (_6 = session === null || session === void 0 ? void 0 : session.user) === null || _6 === void 0 ? void 0 : _6.id,
+                                            id: session?.user?.id,
                                         },
                                     },
                                     toUserId: replyUserId,
@@ -1191,14 +1196,14 @@ const resolvers = {
                             });
                         }
                         else {
-                            yield prisma.notification.update({
+                            await prisma.notification.update({
                                 where: {
                                     id: notification.id,
                                 },
                                 data: {
                                     fromUsers: {
                                         connect: {
-                                            id: (_7 = session === null || session === void 0 ? void 0 : session.user) === null || _7 === void 0 ? void 0 : _7.id,
+                                            id: session?.user?.id,
                                         }
                                     },
                                     updatedAt: new Date(),
@@ -1208,8 +1213,8 @@ const resolvers = {
                     }
                 }
                 else {
-                    if (authorId !== ((_8 = session === null || session === void 0 ? void 0 : session.user) === null || _8 === void 0 ? void 0 : _8.id)) {
-                        const notification = yield prisma.notification.findFirst({
+                    if (authorId !== session?.user?.id) {
+                        const notification = await prisma.notification.findFirst({
                             where: {
                                 postId,
                                 type: "COMMENT_POST",
@@ -1220,14 +1225,14 @@ const resolvers = {
                             }
                         });
                         if (notification) {
-                            yield prisma.notification.update({
+                            await prisma.notification.update({
                                 where: {
                                     id: notification.id
                                 },
                                 data: {
                                     fromUsers: {
                                         connect: {
-                                            id: (_9 = session === null || session === void 0 ? void 0 : session.user) === null || _9 === void 0 ? void 0 : _9.id
+                                            id: session?.user?.id
                                         }
                                     },
                                     updatedAt: new Date()
@@ -1235,11 +1240,11 @@ const resolvers = {
                             });
                         }
                         else {
-                            yield prisma.notification.create({
+                            await prisma.notification.create({
                                 data: {
                                     fromUsers: {
                                         connect: {
-                                            id: (_10 = session === null || session === void 0 ? void 0 : session.user) === null || _10 === void 0 ? void 0 : _10.id
+                                            id: session?.user?.id
                                         }
                                     },
                                     toUserId: authorId,
@@ -1252,11 +1257,11 @@ const resolvers = {
                 }
                 if (parentId) {
                     if (file) {
-                        yield prisma.comment.create({
+                        await prisma.comment.create({
                             data: {
                                 content,
                                 postId,
-                                userId: (_11 = session === null || session === void 0 ? void 0 : session.user) === null || _11 === void 0 ? void 0 : _11.id,
+                                userId: session?.user?.id,
                                 replyUserId,
                                 commentOf: {
                                     connect: {
@@ -1278,11 +1283,11 @@ const resolvers = {
                         };
                     }
                     else {
-                        yield prisma.comment.create({
+                        await prisma.comment.create({
                             data: {
                                 content,
                                 postId,
-                                userId: (_12 = session === null || session === void 0 ? void 0 : session.user) === null || _12 === void 0 ? void 0 : _12.id,
+                                userId: session?.user?.id,
                                 replyUserId,
                                 commentOf: {
                                     connect: {
@@ -1299,11 +1304,11 @@ const resolvers = {
                 }
                 else {
                     if (file) {
-                        yield prisma.comment.create({
+                        await prisma.comment.create({
                             data: {
                                 content,
                                 postId,
-                                userId: (_13 = session === null || session === void 0 ? void 0 : session.user) === null || _13 === void 0 ? void 0 : _13.id,
+                                userId: session?.user?.id,
                                 file: {
                                     create: {
                                         publicId: file.publicId,
@@ -1319,11 +1324,11 @@ const resolvers = {
                         };
                     }
                     else {
-                        yield prisma.comment.create({
+                        await prisma.comment.create({
                             data: {
                                 content,
                                 postId,
-                                userId: (_14 = session === null || session === void 0 ? void 0 : session.user) === null || _14 === void 0 ? void 0 : _14.id,
+                                userId: session?.user?.id,
                             },
                         });
                         return {
@@ -1339,9 +1344,9 @@ const resolvers = {
                     message: error.message,
                 };
             }
-        }),
-        deleteComment: (_parent, { id }) => __awaiter(void 0, void 0, void 0, function* () {
-            yield prisma.comment.delete({
+        },
+        deleteComment: async (_parent, { id }) => {
+            await prisma.comment.delete({
                 where: {
                     id,
                 },
@@ -1350,96 +1355,93 @@ const resolvers = {
                 success: true,
                 message: "Comment deleted success",
             };
-        }),
-        sendMessage: function (_, args, context) {
-            var _a, _b, _c, _d;
-            return __awaiter(this, void 0, void 0, function* () {
-                const { session, prisma } = context;
-                if (!(session === null || session === void 0 ? void 0 : session.user)) {
-                    throw new GraphQLError("Not authorized");
-                }
-                const { message } = args;
-                const { conversationId, content, files, toUserId } = message;
-                try {
-                    if (conversationId) {
-                        if (files) {
-                            const message = yield prisma.message.create({
-                                data: {
-                                    content,
-                                    conversationId,
-                                    senderId: (_a = session === null || session === void 0 ? void 0 : session.user) === null || _a === void 0 ? void 0 : _a.id,
-                                    files: {
-                                        createMany: {
-                                            data: files
-                                        }
-                                    }
-                                }
-                            });
-                            return message;
-                        }
-                        else {
-                            const message = yield prisma.message.create({
-                                data: {
-                                    content,
-                                    conversationId,
-                                    senderId: (_b = session === null || session === void 0 ? void 0 : session.user) === null || _b === void 0 ? void 0 : _b.id,
-                                }
-                            });
-                            return message;
-                        }
-                    }
-                    else {
-                        const conversationCreated = yield prisma.conversation.create({
-                            data: {
-                                participants: {
-                                    connect: [{ id: (_c = session === null || session === void 0 ? void 0 : session.user) === null || _c === void 0 ? void 0 : _c.id }, { id: toUserId }]
-                                },
-                            }
-                        });
-                        yield prisma.message.create({
+        },
+        sendMessage: async function (_, args, context) {
+            const { session, prisma } = context;
+            if (!session?.user) {
+                throw new graphql_1.GraphQLError("Not authorized");
+            }
+            const { message } = args;
+            const { conversationId, content, files, toUserId } = message;
+            try {
+                if (conversationId) {
+                    if (files) {
+                        const message = await prisma.message.create({
                             data: {
                                 content,
-                                conversationId: conversationCreated.id,
-                                senderId: (_d = session === null || session === void 0 ? void 0 : session.user) === null || _d === void 0 ? void 0 : _d.id,
-                            }
-                        });
-                        const conversations = yield prisma.conversation.findMany({
-                            include: {
-                                messages: {
-                                    select: {
-                                        content: true,
-                                        sender: {
-                                            select: {
-                                                id: true,
-                                                name: true,
-                                                image: true
-                                            },
-                                        },
-                                        files: {
-                                            select: {
-                                                publicId: true,
-                                                type: true,
-                                                url: true
-                                            }
-                                        }
-                                    }
-                                },
-                                participants: {
-                                    select: {
-                                        id: true
+                                conversationId,
+                                senderId: session?.user?.id,
+                                files: {
+                                    createMany: {
+                                        data: files
                                     }
                                 }
                             }
                         });
-                        const conversation = conversations.find((conversation) => conversation.participants.some((p) => { var _a; return p.id === ((_a = session === null || session === void 0 ? void 0 : session.user) === null || _a === void 0 ? void 0 : _a.id) && p.id === toUserId; }));
-                        return conversation;
+                        return message;
+                    }
+                    else {
+                        const message = await prisma.message.create({
+                            data: {
+                                content,
+                                conversationId,
+                                senderId: session?.user?.id,
+                            }
+                        });
+                        return message;
                     }
                 }
-                catch (error) {
-                    throw new GraphQLError("Error sending message");
+                else {
+                    const conversationCreated = await prisma.conversation.create({
+                        data: {
+                            participants: {
+                                connect: [{ id: session?.user?.id }, { id: toUserId }]
+                            },
+                        }
+                    });
+                    await prisma.message.create({
+                        data: {
+                            content,
+                            conversationId: conversationCreated.id,
+                            senderId: session?.user?.id,
+                        }
+                    });
+                    const conversations = await prisma.conversation.findMany({
+                        include: {
+                            messages: {
+                                select: {
+                                    content: true,
+                                    sender: {
+                                        select: {
+                                            id: true,
+                                            name: true,
+                                            image: true
+                                        },
+                                    },
+                                    files: {
+                                        select: {
+                                            publicId: true,
+                                            type: true,
+                                            url: true
+                                        }
+                                    }
+                                }
+                            },
+                            participants: {
+                                select: {
+                                    id: true
+                                }
+                            }
+                        }
+                    });
+                    const conversation = conversations.find((conversation) => conversation.participants.some((p) => p.id === session?.user?.id && p.id === toUserId));
+                    return conversation;
                 }
-            });
+            }
+            catch (error) {
+                throw new graphql_1.GraphQLError("Error sending message");
+            }
         },
     },
 };
-export default resolvers;
+exports.default = resolvers;

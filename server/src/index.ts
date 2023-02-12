@@ -73,22 +73,24 @@ const main = async () => {
       socket.to(receiverId).emit("user-typing", { sender, isTyping })
     })
 
-    socket.on("calling", ({ caller, receiverId }: { caller: PeerUser, receiverId: string }) => {
-      socket.to(receiverId).emit("calling", {
-        caller
-      })
-    })
+    // socket.on("calling", ({ caller, receiverId , channelId , token}: { caller: PeerUser, receiverId: string , channelId: string, token: string}) => {
+    //   socket.to(receiverId).emit("calling", {
+    //     caller,
+    //     channelId,
+    //     token
+    //   })
+    // })
 
-    socket.on("callAccepted", ({ peerId, callerId }: { peerId: string, callerId: string }) => {
-      socket.to(callerId).emit("callAccepted" , { peerId })
-      console.log("acceptCall :", callerId);
-      console.log("peerId :", peerId);
-    })
+    // socket.on("callAccepted", ({ peerId, callerId }: { peerId: string, callerId: string }) => {
+    //   socket.to(callerId).emit("callAccepted" , { peerId })
+    //   console.log("acceptCall :", callerId);
+    //   console.log("peerId :", peerId);
+    // })
 
-    socket.on("rejectCall", ({ callerId }: { callerId: string }) => {
-      console.log("rejectCall :", callerId);
-      socket.to(callerId).emit("rejectCall")
-    })
+    // socket.on("rejectCall", ({ callerId }: { callerId: string }) => {
+    //   console.log("rejectCall :", callerId);
+    //   socket.to(callerId).emit("rejectCall")
+    // })
 
 
     socket.on("updateNotification", () => {
