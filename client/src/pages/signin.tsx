@@ -9,6 +9,8 @@ import { GetServerSideProps } from 'next'
 import { unstable_getServerSession as getServerSession } from "next-auth";
 import { useRouter } from 'next/router'
 import { authOptions } from '@/pages/api/auth/[...nextauth]'
+import Image from 'next/image'
+import Meta from '@/components/Widget/Meta'
 
 
 interface State {
@@ -27,6 +29,7 @@ interface RememberData {
 
 
 const Signin = () => {
+    const router = useRouter()
 
     const handleSignIn = (provider: string) => {
         signIn(provider).catch((err) => {
@@ -40,12 +43,17 @@ const Signin = () => {
 
     return (
         <>
+            <Meta 
+             image={"/favicon.png"} 
+             title='Signin - WSocial' 
+             description={"This is Wsocial app"} />
+
             <Toaster />
             <div className="h-screen w-screen flex justify-center items-center overflow-hidden bg-no-repeat bg-cover bg-[url('../assets/images/bg-social.png')]">
                 <div className="bg-light rounded-lg p-8 shadow-md lg:w-[30%] w-[90%] ">
                     <div className="flex cursor-pointer w-full justify-center my-8 space-x-1 items-center">
-                        <ImHangouts className="text-primary text-5xl" />
-                        <span className="text-4xl text-dark font-bold" >Signin</span>
+                       <Image className="object-cover" src={require("../../public/favicon.png")} width={60} height={60} alt="" />
+                        <span className="text-4xl text-dark font-bold">{router.locale === "vi" ? "Đăng nhập" : "Signin"}</span>
                     </div>
                     <div className="!w-full space-y-4">
                         <div

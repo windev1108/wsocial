@@ -24,7 +24,7 @@ const MainHeader: NextPage<{
             className={`bg-light flex justify-between lg:grid grid-cols-12 py-2 h-[10vh] shadow-md items-center w-full`}>
             <div className="lg:col-span-2 col-span-9 ">
                 <Link href="/" className="flex px-6 items-center gap-1">
-                    <ImHangouts className="text-3xl text-primary" />
+                    <Image className="object-cover" src={require("../../../public/favicon.png")} width={60} height={60} alt="" />
                     <h1 className={`text-dark text-2xl font-bold `}>WSocial</h1>
                 </Link>
             </div>

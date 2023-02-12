@@ -2,7 +2,6 @@ import POST_OPERATIONS from '@/graphql/operations/post';
 import { createCommentInput, createCommentResponse } from '@/utils/types';
 import { useMutation } from '@apollo/client';
 import { NextPage } from 'next';
-import { useSession } from 'next-auth/react';
 import React, {
     useRef,
     useEffect,
