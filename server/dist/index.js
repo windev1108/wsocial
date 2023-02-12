@@ -33,8 +33,8 @@ const express4_1 = require("@apollo/server/express4");
 const express_1 = __importDefault(require("express"));
 const http_1 = require("http");
 const react_1 = require("next-auth/react");
-const resolvers = require("./graphql/resolvers/index.js");
-const typeDefs = require("./graphql/schema/index.js");
+const resolvers = require("./graphql/resolvers/index.ts");
+const typeDefs = require("./graphql/schema/index.ts");
 const dotenv = __importStar(require("dotenv"));
 const cors_1 = __importDefault(require("cors"));
 const body_parser_1 = __importDefault(require("body-parser"));
@@ -50,7 +50,7 @@ const main = async () => {
     const httpServer = (0, http_1.createServer)(app);
     const io = new socket_io_1.Server(httpServer, {
         cors: {
-            origin: process.env.BASE_URL,
+            origin: `${process.env.BASE_URL}/*`,
             methods: ["GET", "POST"]
         }
     });
@@ -106,7 +106,7 @@ const main = async () => {
     });
     await server.start();
     const corsOptions = {
-        origin: process.env.BASE_URL,
+        origin: `${process.env.BASE_URL}/*`,
         credentials: true,
     };
     app.use("/graphql", (0, cors_1.default)(corsOptions), body_parser_1.default.json(), (0, express4_1.expressMiddleware)(server, {
