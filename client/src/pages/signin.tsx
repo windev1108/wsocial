@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, FormEvent } from 'react'
 import { ImFacebook, ImHangouts } from 'react-icons/im'
 import { FcGoogle } from 'react-icons/fc'
 import { FaEye, FaEyeSlash } from 'react-icons/fa'
@@ -31,7 +31,8 @@ interface RememberData {
 const Signin = () => {
     const router = useRouter()
 
-    const handleSignIn = (provider: string) => {
+    const handleSignIn = (e: FormEvent,provider: string) => {
+        e.preventDefault()
         signIn(provider).catch((err) => {
             console.log(err);
             toast.error(`Unable to sign in with ${provider}`, {
@@ -57,13 +58,13 @@ const Signin = () => {
                     </div>
                     <div className="!w-full space-y-4">
                         <div
-                            onClick={() => handleSignIn("facebook")}
+                            onClick={(e) => handleSignIn(e,"facebook")}
                             className="w-full hover:bg-blue-700 transition-all duration-500 shadow-md border-[1px] border-gray-200 cursor-pointer rounded-md flex space-x-2 justify-center items-center px-2 py-1 bg-primary">
                             <ImFacebook className="text-xl text-light" />
                             <span className="text-light">Facebook</span>
                         </div>
                         <div
-                            onClick={() => handleSignIn("google")}
+                            onClick={(e) => handleSignIn(e,"google")}
                             className="w-full hover:bg-gray-200 transition-all duration-500 shadow-md border-[1px] border-gray-200 cursor-pointer rounded-md flex space-x-2 justify-center items-center px-2 py-1 bg-light">
                             <FcGoogle className="text-xl text-light" />
                             <span className="text-text">Google</span>
