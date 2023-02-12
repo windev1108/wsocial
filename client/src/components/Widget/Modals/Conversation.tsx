@@ -18,6 +18,9 @@ import MESSAGE_OPERATIONS from '@/graphql/operations/message';
 import { useSession } from 'next-auth/react';
 import moment from 'moment';
 import { useTranslation } from 'react-i18next';
+import axios from 'axios';
+import { setOpenStream } from '@/redux/features/streamSlice';
+import { useRouter } from 'next/router';
 
 
 const Conversation: React.FC<{
@@ -30,6 +33,7 @@ const Conversation: React.FC<{
 }> = ({ user, conversationId , lastTimeConnected , isOnline , isTyping , sender}) => {
     const dispatch = useDispatch();
     const { t } = useTranslation()
+    const router = useRouter()
     const { data: session } = useSession()
     const { socket } : any = useSelector<RootState>(state => state.socket)
     const { conversationsCollapse }: any = useSelector<RootState>(
@@ -127,32 +131,76 @@ const Conversation: React.FC<{
         }
     }, [content, user, conversationId])
 
-    const handleOpenStream = React.useCallback(() => {
-       toast.error("This feature is coming soon")
-       return
-
+    const handleOpenStream = React.useCallback(async () => {
+        toast.error(router.locale === "vi" ? "Tính năng này đang cập nhật" : "This feature is coming soon")
+        // const channelId = await createChannel(session?.user?.id + user.id)
+        // const token = await generateToken(channelId)
         // socket.emit("calling", 
         // { caller: {
         //     id: session?.user?.id,
         //     name: session?.user?.name,
         //     image: session?.user?.image
         // },
-        // receiverId: user.id
+        // receiverId: user.id,
+        // channelId,
+        // token
         // })
-        // dispatch(setOpenStream({
-        //     isOpen: true,
-        //     caller: {
-        //         id: session?.user?.id,
-        //         name: session?.user?.name,
-        //         image: session?.user?.image
-        //     },
-        //     receiver: {
-        //         id: user.id,
-        //         name: user.name,
-        //         image: user.image
-        //     }
-        // }))
+        dispatch(setOpenStream({
+            isOpen: true,
+            caller: {
+                id: session?.user?.id,
+                name: session?.user?.name,
+                image: session?.user?.image
+            },
+            receiver: {
+                id: user.id,
+                name: user.name,
+                image: user.image
+            }
+        }))
+
+        
     },[])
+
+
+    // const createChannel = async (channelName: string) : Promise<any> => {
+    //     const res = await axios.post(
+    //       "https://api.agora.io/v1/apps/" + process.env.NEXT_PUBLIC_AGORA_APP_ID + "/cloud_recording/resource",
+    //       {
+    //         cname: channelName
+    //       },
+    //       {
+    //         headers: {
+    //           "Content-Type": "application/json",
+    //           "X-Agora-API-Key": process.env.NEXT_PUBLIC_AGORA_API_KEY,
+    //           "X-Agora-App-Id": process.env.NEXT_PUBLIC_AGORA_APP_ID,
+    //           "X-Agora-App-Certificate": process.env.NEXT_PUBLIC_AGORA_APP_CERTIFICATE
+    //         }
+    //       }
+    //     );
+    //     return res.data.channel_id;
+    //   };
+
+
+    //   const generateToken = async (channelId: string) => {
+    //     const res = await axios.post(
+    //       "https://api.agora.io/v1/apps/" + process.env.NEXT_PUBLIC_AGORA_APP_ID + "/tokens",
+    //       {
+    //         channel_id: channelId,
+    //         uid: 0,
+    //         role: "publisher"
+    //       },
+    //       {
+    //         headers: {
+    //           "Content-Type": "application/json",
+    //           "X-Agora-API-Key": process.env.NEXT_PUBLIC_AGORA_API_KEY,
+    //           "X-Agora-App-Id": process.env.NEXT_PUBLIC_AGORA_APP_ID,
+    //           "X-Agora-App-Certificate": process.env.NEXT_PUBLIC_AGORA_APP_CERTIFICATE
+    //         }
+    //       }
+    //     );
+    //     return res.data.token;
+    //   };
 
 
     return (

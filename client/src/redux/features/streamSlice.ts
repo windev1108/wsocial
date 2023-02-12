@@ -59,10 +59,18 @@ export const callStreamSlice: any = createSlice({
                 caller: null
             }
         },
+        setOpenAnswer: (state, action) => {
+            state.answer = action.payload
+            state.stream = {
+                isOpen: false,
+                caller: null,
+                receiver: null
+            }
+        },
     },
 });
 
 // Action creators are generated for each case reducer function
-export const { setOpenStream  } = callStreamSlice.actions;
+export const { setOpenStream , setOpenAnswer } = callStreamSlice.actions;
 
 export default callStreamSlice.reducer;

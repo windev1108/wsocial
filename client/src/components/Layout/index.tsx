@@ -23,6 +23,7 @@ import { setSocket } from '@/redux/features/socketSlice';
 import { LoadingButton } from '../Widget/Loading';
 // import VideoCall from '@/components/Widget/Calling/VideoCall';
 import dynamic from 'next/dynamic';
+import { setOpenAnswer } from '@/redux/features/streamSlice';
 const NavBarMobile = dynamic(() => import("@/components/Widget/Modals/NavBarMobile"))
 
 
@@ -111,11 +112,15 @@ const Layout: NextPage<LayoutProps> = ({ children }) => {
         }
        })
 
-    //    socket.on("calling" , ({caller}) => {
-    //        dispatch(setOpenStream({
+    //    socket.on("calling" , ({caller, channelId, token}) => {
+    //        dispatch(setOpenAnswer({
     //            isOpen: true,
     //            caller,
+    //            channelId,
+    //            token
     //        }))
+    //              console.log("channelId :",channelId);
+    //              console.log("token :",token);
     //    })
 
        socket.on("updateNotification", () => {

@@ -1444,4 +1444,4 @@ const resolvers = {
         },
     },
 };
-exports.default = resolvers;
+module.exports = resolvers;

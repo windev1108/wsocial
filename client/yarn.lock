@@ -442,6 +442,11 @@
   dependencies:
     "debug" "4"
 
+"agora-rtc-sdk@^3.6.11":
+  "integrity" "sha512-/uOlQeLg+GrR3qJe9UQ39GbHK7OrsLobi3t2W4shG5G7pm1CSPZJUYsWksHlcLgZG0fzvxKcDkGeNQ2AleqniQ=="
+  "resolved" "https://registry.npmjs.org/agora-rtc-sdk/-/agora-rtc-sdk-3.6.11.tgz"
+  "version" "3.6.11"
+
 "ajv@^6.10.0", "ajv@^6.12.4":
   "integrity" "sha512-j3fVLgvTo527anyYyJOGTYJbG+vnnQYvE0m5mmkc1TK+nxAppkCLMIL0aZ4dblVCNoGShhm+kzE4ZUykBoMg4g=="
   "resolved" "https://registry.npmjs.org/ajv/-/ajv-6.12.6.tgz"
