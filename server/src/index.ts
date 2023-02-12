@@ -8,11 +8,11 @@ import express from "express";
 import { createServer } from "http";
 import { getSession } from "next-auth/react";
 // @ts-ignore
-import resolvers from "./graphql/resolvers/index.ts";
+const resolvers = require("./graphql/resolvers/index.ts");
 // @ts-ignore
-import typeDefs from "./graphql/schema/index.ts";
+const typeDefs = require("./graphql/schema/index.ts");
 // @ts-ignore
-import type { GraphQLContext, PeerUser, Session, SocketUser } from "./utils/types.ts";
+import type { GraphQLContext, Session, SocketUser } from "./utils/types.ts";
 import * as dotenv from "dotenv";
 import cors from "cors";
 import bodyParser from "body-parser";

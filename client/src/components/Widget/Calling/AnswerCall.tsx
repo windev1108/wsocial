@@ -40,7 +40,7 @@ const AnswerCall = () => {
            <p className="font-semibold text-center">{`${answer.caller.name} calling for you`}</p>
            <p className="text-sm text-gray-500">This call would start when you press accept </p>
          <div className="flex space-x-3 justify-center">
-            <button 
+            {/* <button 
             onClick={rejectCall}
             className="hover:bg-opacity-70 bg-red-500 rounded-full text-light p-3">
                <IoMdClose />
@@ -50,7 +50,7 @@ const AnswerCall = () => {
             onClick={acceptCall}
             className="hover:bg-opacity-70 bg-green-500 rounded-full text-light p-3">
                <BsFillCameraVideoFill />
-            </button>
+            </button> */}
        </div>
              </div>
    </div>

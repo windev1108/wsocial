@@ -33,8 +33,8 @@ const express4_1 = require("@apollo/server/express4");
 const express_1 = __importDefault(require("express"));
 const http_1 = require("http");
 const react_1 = require("next-auth/react");
-const index_ts_1 = __importDefault(require("./graphql/resolvers/index.ts"));
-const index_ts_2 = __importDefault(require("./graphql/schema/index.ts"));
+const resolvers = require("./graphql/resolvers/index.ts");
+const typeDefs = require("./graphql/schema/index.ts");
 const dotenv = __importStar(require("dotenv"));
 const cors_1 = __importDefault(require("cors"));
 const body_parser_1 = __importDefault(require("body-parser"));
@@ -43,8 +43,8 @@ let users = [];
 const main = async () => {
     dotenv.config();
     const schema = (0, schema_1.makeExecutableSchema)({
-        typeDefs: index_ts_2.default,
-        resolvers: index_ts_1.default,
+        typeDefs,
+        resolvers,
     });
     const app = (0, express_1.default)();
     const httpServer = (0, http_1.createServer)(app);
