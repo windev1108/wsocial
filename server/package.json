@@ -6,7 +6,7 @@
     "main": "index.js",
     "scripts": {
         "dev": "nodemon --exec ts-node src/index.ts",
-        "start": "tsc && node ./dist/index.js",
+        "start": "node ./dist/index.js",
         "build": "tsc",
         "postinstall": "prisma generate",
         "lint": "eslint . --ext .ts"
