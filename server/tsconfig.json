@@ -1,13 +1,11 @@
 {
   "compilerOptions": {
-    "module": "CommonJS",
-    "target": "ESNext",
+    "module": "commonjs",
     "esModuleInterop": true,
-    "noImplicitAny": true,
-    "removeComments": true,
-    "sourceMap": false,
-    "outDir": "./dist",
-    "strict": true
+    "target": "es6",
+    "moduleResolution": "node",
+    "sourceMap": true,
+    "outDir": "dist"
   },
-  "exclude": ["node_modules"]
+  "lib": ["es2015"]
 }
