@@ -9,6 +9,7 @@
         "start": "node ./dist/index.js",
         "build": "tsc",
         "postinstall": "prisma generate",
+        "transpile": "babel --presets es2015 src --out-dir bin",
         "lint": "eslint . --ext .ts"
     },
     "author": "",

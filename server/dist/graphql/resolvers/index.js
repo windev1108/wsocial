@@ -1460,5 +1460,5 @@ const resolvers = {
         },
     },
 };
-module.exports = resolvers;
+exports.default = resolvers;
 //# sourceMappingURL=index.js.map

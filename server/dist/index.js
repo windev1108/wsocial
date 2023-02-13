@@ -43,9 +43,9 @@ const express_1 = __importDefault(require("express"));
 const http_1 = require("http");
 const react_1 = require("next-auth/react");
 // @ts-ignore
-const resolvers = require("./graphql/resolvers/index.ts");
+const index_ts_1 = __importDefault(require("./graphql/resolvers/index.ts"));
 // @ts-ignore
-const typeDefs = require("./graphql/schema/index.ts");
+const index_ts_2 = __importDefault(require("./graphql/schema/index.ts"));
 const dotenv = __importStar(require("dotenv"));
 const cors_1 = __importDefault(require("cors"));
 const body_parser_1 = __importDefault(require("body-parser"));
@@ -56,8 +56,8 @@ const main = () => __awaiter(void 0, void 0, void 0, function* () {
     // Create the schema, which will be used separately by ApolloServer and
     // the WebSocket server.
     const schema = (0, schema_1.makeExecutableSchema)({
-        typeDefs,
-        resolvers,
+        typeDefs: index_ts_2.default,
+        resolvers: index_ts_1.default,
     });
     // Create an Express app and HTTP server; we will attach both the WebSocket
     // server and the ApolloServer to this HTTP server.

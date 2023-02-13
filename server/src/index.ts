@@ -6,9 +6,9 @@ import express from "express";
 import { createServer } from "http";
 import { getSession } from "next-auth/react";
 // @ts-ignore
-const resolvers = require("./graphql/resolvers/index.ts") 
+import resolvers from "./graphql/resolvers/index.ts"
 // @ts-ignore
-const typeDefs = require("./graphql/schema/index.ts")
+import typeDefs from "./graphql/schema/index.ts"
 // @ts-ignore
 import type { GraphQLContext, Session, SocketUser } from "./utils/types.ts";
 import * as dotenv from "dotenv";
