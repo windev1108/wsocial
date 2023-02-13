@@ -287,5 +287,5 @@ const typeDefs = (0, apollo_server_express_1.gql) `
     message: String
   }
 `;
-exports.default = typeDefs;
+module.exports = typeDefs;
 //# sourceMappingURL=index.js.map
