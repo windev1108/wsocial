@@ -407,7 +407,7 @@ const resolvers = {
       });
       return user?.followings;
     },
-    notificationsFrom: async (_parent: any, _args: any) => {
+    notificationsFrom: async (_parent: any, _args: any, { prisma } : GraphQLContext) => {
       const user = await prisma.user.findUnique({
         where: {
           id: _parent.id,
@@ -428,7 +428,7 @@ const resolvers = {
       });
       return user?.notificationsFrom;
     },
-    notificationsTo: async (_parent: any, _args: any) => {
+    notificationsTo: async (_parent: any, _args: any,{ prisma } : GraphQLContext) => {
       const user = await prisma.user.findUnique({
         where: {
           id: _parent.id,
@@ -1491,7 +1491,7 @@ const resolvers = {
         };
       }
     },
-    deleteComment: async (_parent: any, { id }: { id: string }) => {
+    deleteComment: async (_parent: any, { id }: { id: string }, { prisma } : GraphQLContext) => {
       await prisma.comment.delete({
         where: {
           id,
@@ -1594,4 +1594,4 @@ const resolvers = {
   },
 };
 
-export default resolvers;
+module.exports = resolvers;

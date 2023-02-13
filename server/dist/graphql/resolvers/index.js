@@ -372,7 +372,7 @@ const resolvers = {
             });
             return user === null || user === void 0 ? void 0 : user.followings;
         }),
-        notificationsFrom: (_parent, _args) => __awaiter(void 0, void 0, void 0, function* () {
+        notificationsFrom: (_parent, _args, { prisma }) => __awaiter(void 0, void 0, void 0, function* () {
             const user = yield prisma.user.findUnique({
                 where: {
                     id: _parent.id,
@@ -393,7 +393,7 @@ const resolvers = {
             });
             return user === null || user === void 0 ? void 0 : user.notificationsFrom;
         }),
-        notificationsTo: (_parent, _args) => __awaiter(void 0, void 0, void 0, function* () {
+        notificationsTo: (_parent, _args, { prisma }) => __awaiter(void 0, void 0, void 0, function* () {
             const user = yield prisma.user.findUnique({
                 where: {
                     id: _parent.id,
@@ -1357,7 +1357,7 @@ const resolvers = {
                 };
             }
         }),
-        deleteComment: (_parent, { id }) => __awaiter(void 0, void 0, void 0, function* () {
+        deleteComment: (_parent, { id }, { prisma }) => __awaiter(void 0, void 0, void 0, function* () {
             yield prisma.comment.delete({
                 where: {
                     id,
@@ -1460,5 +1460,5 @@ const resolvers = {
         },
     },
 };
-exports.default = resolvers;
+module.exports = resolvers;
 //# sourceMappingURL=index.js.map
