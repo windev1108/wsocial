@@ -34,7 +34,7 @@ const main = async () => {
   const httpServer = createServer(app);
   const io = new Server(httpServer, {
     cors: {
-      origin: `${process.env.BASE_URL}/*`,
+      origin: process.env.BASE_URL,
       methods: ["GET", "POST"]
     }
   })
@@ -124,7 +124,7 @@ const main = async () => {
   await server.start();
 
   const corsOptions = {
-    origin: `${process.env.BASE_URL}/*`,
+    origin: process.env.BASE_URL,
     credentials: true,
   };
 
