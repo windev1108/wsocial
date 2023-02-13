@@ -43,9 +43,9 @@ const express_1 = __importDefault(require("express"));
 const http_1 = require("http");
 const react_1 = require("next-auth/react");
 // @ts-ignore
-const resolvers = require("./graphql/resolvers/index.js");
+const resolvers = require("./graphql/resolvers/index.ts");
 // @ts-ignore
-const typeDefs = require("./graphql/schema/index.js");
+const typeDefs = require("./graphql/schema/index.ts");
 const dotenv = __importStar(require("dotenv"));
 const cors_1 = __importDefault(require("cors"));
 const body_parser_1 = __importDefault(require("body-parser"));
@@ -65,7 +65,7 @@ const main = () => __awaiter(void 0, void 0, void 0, function* () {
     const httpServer = (0, http_1.createServer)(app);
     const io = new socket_io_1.Server(httpServer, {
         cors: {
-            origin: `${process.env.BASE_URL}/`,
+            origin: `*`,
             methods: ["GET", "POST"]
         }
     });
