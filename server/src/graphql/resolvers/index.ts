@@ -1,14 +1,14 @@
-import { PrismaClient } from "@prisma/client";
 // @ts-ignore
 import type { Post, GraphQLContext, NotificationInput, CommentInput, SendMessageArguments } from "../../utils/types.ts";
 import { GraphQLError } from "graphql";
 
-const prisma = new PrismaClient();
 
 const resolvers = {
   Query: {
     // Query all users
-    getUsers: async () => await prisma.user.findMany(),
+    getUsers: async (_parent:any,_args:any, { prisma } : GraphQLContext) => {
+     return await prisma.user.findMany()
+    },
     // Query user by Id
     getUserById: async (
       _parent: any,
@@ -90,7 +90,7 @@ const resolvers = {
       };
     },
     // Query all post
-    getPosts: async (_parent: any, { userId }: any) => {
+    getPosts: async (_parent: any, { userId }: any, { prisma } : GraphQLContext) => {
       const { friends, followings }: any = await prisma.user.findUnique({
         where: {
           id: userId,
@@ -141,7 +141,7 @@ const resolvers = {
       return customPosts.filter((post: any) => !post.isMySelf);
     },
     //  Query post by Id
-    getPostById: async (_parent: any, args: { id: string }) =>
+    getPostById: async (_parent: any, args: { id: string }, { prisma } : GraphQLContext) =>
       await prisma.post.findUnique({
         where: {
           id: args.id,
@@ -260,7 +260,7 @@ const resolvers = {
   },
   //  Query the children  of user
   User: {
-    posts: async (_parent: any, { isMySelf, isFriend }: any) => {
+    posts: async (_parent: any, { isMySelf, isFriend }: any, { prisma } : GraphQLContext) => {
       if (isMySelf) {
         const posts = await prisma.post.findMany({
           where: {
@@ -323,7 +323,7 @@ const resolvers = {
         return posts;
       }
     },
-    friends: async (_parent: any, _args: any) => {
+    friends: async (_parent: any, _args: any, { prisma } : GraphQLContext) => {
       const user = await prisma.user.findUnique({
         where: { id: _parent.id },
         select: { friends: true },
@@ -393,14 +393,14 @@ const resolvers = {
         };
       });
     },
-    followers: async (_parent: any, _args: any) => {
+    followers: async (_parent: any, _args: any, { prisma } : GraphQLContext) => {
       const user = await prisma.user.findUnique({
         where: { id: _parent.id },
         select: { followers: true },
       });
       return user?.followers;
     },
-    followings: async (_parent: any, _args: any) => {
+    followings: async (_parent: any, _args: any, { prisma }: GraphQLContext) => {
       const user = await prisma.user.findUnique({
         where: { id: _parent.id },
         select: { followings: true },
@@ -462,13 +462,13 @@ const resolvers = {
   },
   // Query the children  of post
   Post: {
-    author: async (_parent: Post, _args: any) =>
+    author: async (_parent: Post, _args: any, { prisma }: GraphQLContext) =>
       await prisma.user.findUnique({
         where: {
           id: _parent.authorId,
         },
       }),
-    likes: async (_parent: any, _args: any) => {
+    likes: async (_parent: any, _args: any,{ prisma }: GraphQLContext) => {
       const post = await prisma.post.findUnique({
         where: {
           id: _parent.id,
@@ -485,7 +485,7 @@ const resolvers = {
       });
       return post?.likes;
     },
-    files: async (_parent: Post, _args: any) =>
+    files: async (_parent: Post, _args: any,{ prisma }: GraphQLContext) =>
       await prisma.file.findMany({
         where: {
           postId: _parent.id,
@@ -900,7 +900,7 @@ const resolvers = {
         message: "Updated post successfully",
       };
     },
-    deletePost: async (_parent: any, { id }: { id: string }) => {
+    deletePost: async (_parent: any, { id }: { id: string }, { prisma }: GraphQLContext) => {
       await prisma.post.delete({
         where: {
           id,
@@ -918,7 +918,7 @@ const resolvers = {
       context: GraphQLContext
     ) => {
       try {
-        const { session } = context;
+        const { session , prisma} = context;
         const userUpdate = await prisma.user.update({
           where: {
             id: session?.user?.id as string,
@@ -1594,4 +1594,4 @@ const resolvers = {
   },
 };
 
-module.exports = resolvers;
+export default resolvers;
