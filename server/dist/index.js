@@ -43,9 +43,9 @@ const express_1 = __importDefault(require("express"));
 const http_1 = require("http");
 const react_1 = require("next-auth/react");
 // @ts-ignore
-const resolvers = require("./graphql/resolvers/index.ts");
+const resolvers = require("./graphql/resolvers/index.js");
 // @ts-ignore
-const typeDefs = require("./graphql/schema/index.ts");
+const typeDefs = require("./graphql/schema/index.js");
 const dotenv = __importStar(require("dotenv"));
 const cors_1 = __importDefault(require("cors"));
 const body_parser_1 = __importDefault(require("body-parser"));
