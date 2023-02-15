@@ -65,7 +65,7 @@ const main = () => __awaiter(void 0, void 0, void 0, function* () {
     const httpServer = (0, http_1.createServer)(app);
     const io = new socket_io_1.Server(httpServer, {
         cors: {
-            origin: `*`,
+            origin: "*",
             methods: ["GET", "POST"]
         }
     });
@@ -137,7 +137,7 @@ const main = () => __awaiter(void 0, void 0, void 0, function* () {
     });
     yield server.start();
     const corsOptions = {
-        origin: `*`,
+        origin: "*",
         credentials: true,
     };
     app.use("/graphql", (0, cors_1.default)(corsOptions), body_parser_1.default.json(), (0, express4_1.expressMiddleware)(server, {
