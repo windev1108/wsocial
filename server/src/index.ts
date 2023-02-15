@@ -124,8 +124,7 @@ const main = async () => {
   await server.start();
 
   const corsOptions = {
-    origin: `*`,
-    credentials: true,
+    origin: "*",
   };
 
   app.use(
