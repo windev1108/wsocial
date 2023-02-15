@@ -123,13 +123,8 @@ const main = async () => {
   });
   await server.start();
 
-  const corsOptions = {
-    origin: "*",
-  };
-
   app.use(
     "/graphql",
-    cors<cors.CorsRequest>(corsOptions),
     bodyParser.json(),
     expressMiddleware(server, {
       context: async ({ req }): Promise<GraphQLContext> => {

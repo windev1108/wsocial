@@ -43,11 +43,10 @@ const express_1 = __importDefault(require("express"));
 const http_1 = require("http");
 const react_1 = require("next-auth/react");
 // @ts-ignore
-const resolvers = require("./graphql/resolvers/index.js");
+const resolvers = require("./graphql/resolvers/index.ts");
 // @ts-ignore
-const typeDefs = require("./graphql/schema/index.js");
+const typeDefs = require("./graphql/schema/index.ts");
 const dotenv = __importStar(require("dotenv"));
-const cors_1 = __importDefault(require("cors"));
 const body_parser_1 = __importDefault(require("body-parser"));
 const socket_io_1 = require("socket.io");
 let users = [];
@@ -65,7 +64,7 @@ const main = () => __awaiter(void 0, void 0, void 0, function* () {
     const httpServer = (0, http_1.createServer)(app);
     const io = new socket_io_1.Server(httpServer, {
         cors: {
-            origin: "*",
+            origin: `*`,
             methods: ["GET", "POST"]
         }
     });
@@ -136,10 +135,7 @@ const main = () => __awaiter(void 0, void 0, void 0, function* () {
         csrfPrevention: true,
     });
     yield server.start();
-    const corsOptions = {
-        origin: "*",
-    };
-    app.use("/graphql", (0, cors_1.default)(corsOptions), body_parser_1.default.json(), (0, express4_1.expressMiddleware)(server, {
+    app.use("/graphql", body_parser_1.default.json(), (0, express4_1.expressMiddleware)(server, {
         context: ({ req }) => __awaiter(void 0, void 0, void 0, function* () {
             const session = yield (0, react_1.getSession)({ req });
             return { session: session, prisma };
