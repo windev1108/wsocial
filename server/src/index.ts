@@ -6,9 +6,9 @@ import express from "express";
 import { createServer } from "http";
 import { getSession } from "next-auth/react";
 // @ts-ignore
-const resolvers = require("./graphql/resolvers/index.js") 
+import resolvers from "./graphql/resolvers/index.ts"
 // @ts-ignore
-const typeDefs = require("./graphql/schema/index.js") 
+import typeDefs from "./graphql/schema/index.ts"
 // @ts-ignore
 import type { GraphQLContext, Session, SocketUser } from "./utils/types.ts";
 import * as dotenv from "dotenv";
@@ -34,7 +34,7 @@ const main = async () => {
   const httpServer = createServer(app);
   const io = new Server(httpServer, {
     cors: {
-      origin: `*`,
+      origin: process.env.BASE_URL,
       methods: ["GET", "POST"]
     }
   })
@@ -112,6 +112,10 @@ const main = async () => {
     });
   })
 
+  const corsOptions = {
+    origin: process.env.BASE_URL,
+    credentials: true,
+  };
 
   // Context parameters
   const prisma = new PrismaClient();
@@ -125,6 +129,7 @@ const main = async () => {
 
   app.use(
     "/graphql",
+    cors<cors.CorsRequest>(corsOptions),
     bodyParser.json(),
     expressMiddleware(server, {
       context: async ({ req }): Promise<GraphQLContext> => {

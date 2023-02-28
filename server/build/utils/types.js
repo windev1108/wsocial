@@ -20,4 +20,3 @@ var Viewer;
     Viewer[Viewer["FRIENDS"] = 1] = "FRIENDS";
     Viewer[Viewer["PRIVATE"] = 2] = "PRIVATE";
 })(Viewer = exports.Viewer || (exports.Viewer = {}));
-//# sourceMappingURL=types.js.map

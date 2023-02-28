@@ -1,3 +1,4 @@
+import { File } from '@/utils/types';
 import 'next-auth';
 
 declare module 'next-auth' {
@@ -8,7 +9,7 @@ declare module 'next-auth' {
     interface User {
         id: string;
         email: string;
-        image: string;
         name: string;
+        avatar?: File
     }
 }
