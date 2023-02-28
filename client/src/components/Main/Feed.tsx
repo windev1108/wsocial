@@ -23,7 +23,6 @@ const Feed = () => {
     const { user } : any = useSelector<RootState>(state => state.session)
     const { loading, data , refetch } = useQuery(POST_OPERATIONS.Queries.getPosts, {
         variables: {
-            userId: session?.user.id,
             viewer: 'PUBLIC',
             take: 100,
         },
@@ -32,7 +31,6 @@ const Feed = () => {
     useEffect(() => {
          socket?.on("updatePost", () => {
              refetch({
-                userId: session?.user.id,
                 viewer: 'PUBLIC',
                 take: 100,
              })

@@ -4,8 +4,8 @@ import { gql } from '@apollo/client';
 const POST_OPERATIONS = {
     Queries: {
         getPosts: gql`
-            query getPosts($userId: String, $viewer: String, $take: Int) {
-                getPosts(userId: $userId, viewer: $viewer, take: $take) {
+            query getPosts($viewer: String, $take: Int) {
+                getPosts(viewer: $viewer, take: $take) {
                     id
                     content
                     viewer
