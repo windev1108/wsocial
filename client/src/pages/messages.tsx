@@ -1,4 +1,3 @@
-import VideoCall from '@/components/Widget/Calling/VideoCall';
 import { LoadingPage } from '@/components/Widget/Loading'
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import React, { lazy, Suspense, useState } from 'react'

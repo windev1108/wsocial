@@ -1,6 +1,5 @@
 import { NextPage } from 'next';
-import Head from 'next/head';
-import React, { ReactNode, lazy, memo, useEffect, Suspense , useState } from 'react';
+import React, { ReactNode, memo, useEffect, Suspense , useState } from 'react';
 import FriendsList from './NavRight';
 import NavBar from './NavLeft';
 import Header from './Header';
@@ -21,7 +20,6 @@ import { addConversation } from '@/redux/features/conversationSlice';
 import { setSession, setSessionUsers } from '@/redux/features/sessionSlice';
 import { setSocket } from '@/redux/features/socketSlice';
 import { LoadingButton } from '../Widget/Loading';
-// import VideoCall from '@/components/Widget/Calling/VideoCall';
 import dynamic from 'next/dynamic';
 import Meta from '@/components/Widget/Meta';
 const NavBarMobile = dynamic(() => import("@/components/Widget/Modals/NavBarMobile"))
