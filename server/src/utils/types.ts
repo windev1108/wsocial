@@ -123,6 +123,7 @@ export interface SendMessageArguments {
     conversationId: string;
     toUserId: string;
     content: string;
+    sessionUserId: string
     files: File[]
   }
 }
