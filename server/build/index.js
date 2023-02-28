@@ -81,9 +81,9 @@ var express_1 = __importDefault(require("express"));
 var http_1 = require("http");
 var react_1 = require("next-auth/react");
 // @ts-ignore
-var index_ts_1 = __importDefault(require("./graphql/resolvers/index.js"));
+var index_ts_1 = __importDefault(require("./graphql/resolvers/index.ts"));
 // @ts-ignore
-var index_ts_2 = __importDefault(require("./graphql/schema/index.js"));
+var index_ts_2 = __importDefault(require("./graphql/schema/index.ts"));
 var dotenv = __importStar(require("dotenv"));
 var cors_1 = __importDefault(require("cors"));
 var body_parser_1 = __importDefault(require("body-parser"));

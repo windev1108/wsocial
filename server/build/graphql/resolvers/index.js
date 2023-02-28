@@ -137,32 +137,34 @@ var resolvers = {
             });
         },
         // Query all post
-        getPosts: function (_parent, _a, _b) {
-            var userId = _a.userId;
-            var prisma = _b.prisma;
+        getPosts: function (_parent, _args, _a) {
+            var prisma = _a.prisma, session = _a.session;
             return __awaiter(void 0, void 0, void 0, function () {
-                var _c, friends, followings, posts, customPosts;
+                var _b, friends, followings, posts, customPosts;
+                var _c;
                 return __generator(this, function (_d) {
                     switch (_d.label) {
-                        case 0: return [4 /*yield*/, prisma.user.findUnique({
-                                where: {
-                                    id: userId,
-                                },
-                                select: {
-                                    friends: {
-                                        select: {
-                                            id: true,
+                        case 0:
+                            console.log("session", session);
+                            return [4 /*yield*/, prisma.user.findUnique({
+                                    where: {
+                                        id: (_c = session === null || session === void 0 ? void 0 : session.user) === null || _c === void 0 ? void 0 : _c.id,
+                                    },
+                                    select: {
+                                        friends: {
+                                            select: {
+                                                id: true,
+                                            },
+                                        },
+                                        followings: {
+                                            select: {
+                                                id: true,
+                                            },
                                         },
                                     },
-                                    followings: {
-                                        select: {
-                                            id: true,
-                                        },
-                                    },
-                                },
-                            })];
+                                })];
                         case 1:
-                            _c = _d.sent(), friends = _c.friends, followings = _c.followings;
+                            _b = _d.sent(), friends = _b.friends, followings = _b.followings;
                             return [4 /*yield*/, prisma.post.findMany({
                                     orderBy: {
                                         createdAt: "desc",
@@ -180,13 +182,15 @@ var resolvers = {
                             posts = _d.sent();
                             customPosts = posts
                                 .filter(function (post) {
+                                var _a, _b;
                                 return friends.some(function (u) { return u.id === post.authorId; }) ||
                                     followings.some(function (u) { return u.id === post.authorId; }) ||
-                                    (post.authorId === userId && post.viewer === "PRIVATE") ||
-                                    userId === post.authorId;
+                                    (post.authorId === ((_a = session === null || session === void 0 ? void 0 : session.user) === null || _a === void 0 ? void 0 : _a.id) && post.viewer === "PRIVATE") ||
+                                    ((_b = session === null || session === void 0 ? void 0 : session.user) === null || _b === void 0 ? void 0 : _b.id) === post.authorId;
                             })
                                 .map(function (post) {
-                                return __assign(__assign({}, post), { isMySelf: post.authorId !== userId && post.viewer === "PRIVATE" });
+                                var _a;
+                                return __assign(__assign({}, post), { isMySelf: post.authorId !== ((_a = session === null || session === void 0 ? void 0 : session.user) === null || _a === void 0 ? void 0 : _a.id) && post.viewer === "PRIVATE" });
                             });
                             return [2 /*return*/, customPosts.filter(function (post) { return !post.isMySelf; })];
                     }
