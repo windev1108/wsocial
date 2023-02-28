@@ -90,10 +90,11 @@ const resolvers = {
       };
     },
     // Query all post
-    getPosts: async (_parent: any, { userId }: any, { prisma } : GraphQLContext) => {
+    getPosts: async (_parent: any, _args: any, { prisma , session } : GraphQLContext) => {
+      console.log("session",session);
       const { friends, followings }: any = await prisma.user.findUnique({
         where: {
-          id: userId,
+          id: session?.user?.id! as string,
         },
         select: {
           friends: {
@@ -128,13 +129,13 @@ const resolvers = {
           (post: any) =>
             friends.some((u: { id: string }) => u.id === post.authorId) ||
             followings.some((u: { id: string }) => u.id === post.authorId) ||
-            (post.authorId === userId && post.viewer === "PRIVATE") ||
-            userId === post.authorId
+            (post.authorId === session?.user?.id! && post.viewer === "PRIVATE") ||
+            session?.user?.id! === post.authorId
         )
         .map((post: any) => {
           return {
             ...post,
-            isMySelf: post.authorId !== userId && post.viewer === "PRIVATE",
+            isMySelf: post.authorId !== session?.user?.id! && post.viewer === "PRIVATE",
           };
         });
 

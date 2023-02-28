@@ -230,7 +230,7 @@ const typeDefs = gql`
   type Query {
     getUsers: [User]
     getUserById(id: ID!): User
-    getPosts(userId: String, viewer: String, take: Int): [Post]
+    getPosts(viewer: String, take: Int): [Post]
     getPostById(id: ID!): Post
     conversations: [Conversation]
     findConversation(userId: ID!): Conversation
