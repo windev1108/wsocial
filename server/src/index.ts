@@ -12,14 +12,18 @@ import resolvers from "./graphql/resolvers/index.ts";
 // @ts-ignore
 import typeDefs from "./graphql/schema/index.ts";
 // @ts-ignore
-import type { GraphQLContext, PeerUser, Session, SocketUser } from "./utils/types.ts";
+import type {
+  GraphQLContext,
+  PeerUser,
+  Session,
+  SocketUser,
+} from "./utils/types.ts";
 import * as dotenv from "dotenv";
 import cors from "cors";
 import bodyParser from "body-parser";
 import { Server, Socket } from "socket.io";
 
-let users: SocketUser[] = []
-
+let users: SocketUser[] = [];
 
 const main = async () => {
   dotenv.config();
@@ -37,81 +41,111 @@ const main = async () => {
   const io = new Server(httpServer, {
     cors: {
       origin: process.env.BASE_URL,
-      methods: ["GET", "POST"]
-    }
-  })
-
-
+      methods: ["GET", "POST"],
+    },
+  });
 
   io.on("connection", (socket: Socket) => {
     socket.on("user-connected", ({ userId }: { userId: string }) => {
       console.log(`Socket ${socket.id} connected`);
       socket.join(userId);
-      const foundIndex = users.findIndex((u) => u.userId === userId)
+      const foundIndex = users.findIndex((u) => u.userId === userId);
       if (foundIndex !== -1) {
-        users[foundIndex]!.socketId = socket.id
-        users[foundIndex]!.isOnline = true
-        users[foundIndex]!.lastTime = null
+        users[foundIndex]!.socketId = socket.id;
+        users[foundIndex]!.isOnline = true;
+        users[foundIndex]!.lastTime = null;
       } else {
-        users.push({ userId, socketId: socket.id, isOnline: true, lastTime: null })
+        users.push({
+          userId,
+          socketId: socket.id,
+          isOnline: true,
+          lastTime: null,
+        });
       }
       console.log("users :", users);
-      io.emit("users", users)
-    })
+      io.emit("users", users);
+    });
 
-    socket.on("sendMessage", ({ sender, receiverId, message }: { sender: any, receiverId: string, message: string }) => {
-      socket.to(receiverId).emit("receive_message", {
-        sender: {
-          ...sender,
-          isOnline: users.find(u => u.userId === sender.id)?.isOnline,
-          lastTime: users.find(u => u.userId === sender.id)?.lastTime
-        }, message
-      })
-    })
+    socket.on(
+      "sendMessage",
+      ({
+        sender,
+        receiverId,
+        message,
+      }: {
+        sender: any;
+        receiverId: string;
+        message: string;
+      }) => {
+        socket.to(receiverId).emit("receive_message", {
+          sender: {
+            ...sender,
+            isOnline: users.find((u) => u.userId === sender.id)?.isOnline,
+            lastTime: users.find((u) => u.userId === sender.id)?.lastTime,
+          },
+          message,
+        });
+      }
+    );
 
-    socket.on("userTyping", ({ sender, receiverId, isTyping }: { sender: any, receiverId: string, isTyping: boolean }) => {
-      socket.to(receiverId).emit("user-typing", { sender, isTyping })
-    })
+    socket.on(
+      "userTyping",
+      ({
+        sender,
+        receiverId,
+        isTyping,
+      }: {
+        sender: any;
+        receiverId: string;
+        isTyping: boolean;
+      }) => {
+        socket.to(receiverId).emit("user-typing", { sender, isTyping });
+      }
+    );
 
-    socket.on("calling", ({ caller, receiverId }: { caller: PeerUser, receiverId: string }) => {
-      socket.to(receiverId).emit("calling", {
-        caller
-      })
-    })
+    socket.on(
+      "calling",
+      ({ caller, receiverId }: { caller: PeerUser; receiverId: string }) => {
+        socket.to(receiverId).emit("calling", {
+          caller,
+        });
+      }
+    );
 
-    socket.on("callAccepted", ({ peerId, callerId }: { peerId: string, callerId: string }) => {
-      socket.to(callerId).emit("callAccepted" , { peerId })
-      console.log("acceptCall :", callerId);
-      console.log("peerId :", peerId);
-    })
+    socket.on(
+      "callAccepted",
+      ({ peerId, callerId }: { peerId: string; callerId: string }) => {
+        socket.to(callerId).emit("callAccepted", { peerId });
+        console.log("acceptCall :", callerId);
+        console.log("peerId :", peerId);
+      }
+    );
 
     socket.on("rejectCall", ({ callerId }: { callerId: string }) => {
       console.log("rejectCall :", callerId);
-      socket.to(callerId).emit("rejectCall")
-    })
-
+      socket.to(callerId).emit("rejectCall");
+    });
 
     socket.on("updateNotification", () => {
-      socket.broadcast.emit("updateNotification")
-    })
+      socket.broadcast.emit("updateNotification");
+    });
 
     socket.on("updatePost", () => {
-      socket.broadcast.emit("updatePost")
-    })
+      socket.broadcast.emit("updatePost");
+    });
 
-    socket.on('disconnect', () => {
-      console.log('Socket ' + socket.id + ' disconnected');
+    socket.on("disconnect", () => {
+      console.log("Socket " + socket.id + " disconnected");
       // remove saved socket from users object
-      const foundIndex = users.findIndex(u => u.socketId === socket.id)
+      const foundIndex = users.findIndex((u) => u.socketId === socket.id);
       if (foundIndex !== -1) {
-        users[foundIndex]!.isOnline = false
-        users[foundIndex]!.lastTime = new Date()
+        users[foundIndex]!.isOnline = false;
+        users[foundIndex]!.lastTime = new Date();
       }
       console.log("users :", users);
-      io.emit("users", users)
+      io.emit("users", users);
     });
-  })
-
+  });
 
   // Context parameters
   const prisma = new PrismaClient();

@@ -8,10 +8,7 @@ import { AiFillLinkedin, AiOutlineLoading3Quarters } from 'react-icons/ai';
 import { BsFacebook, BsInstagram } from 'react-icons/bs';
 import { ImLocation } from 'react-icons/im';
 import { IoLogoTwitter } from 'react-icons/io';
-import {
-    NotificationInput,
-    createNotificationResponse,
-} from '@/utils/types';
+import { NotificationInput, createNotificationResponse } from '@/utils/types';
 import { MdPersonAddAlt1 } from 'react-icons/md';
 import { FaUserPlus, FaUserTimes } from 'react-icons/fa';
 import USER_OPERATIONS from '@/graphql/operations/user';
@@ -29,8 +26,8 @@ interface NotFriendComponentProps {
     twitterUrl: string;
     isSendAddFriend: boolean;
     isReceiveAddFriend: boolean;
-    isFollowed: boolean
-    isFollowing: boolean
+    isFollowed: boolean;
+    isFollowing: boolean;
 }
 
 const NotFriendComponent: NextPage<NotFriendComponentProps> = ({
@@ -45,9 +42,9 @@ const NotFriendComponent: NextPage<NotFriendComponentProps> = ({
     isSendAddFriend,
     isReceiveAddFriend,
     isFollowed,
-    isFollowing
+    isFollowing,
 }) => {
-    const { socket } : any = useSelector<RootState>(state => state.socket)
+    const { socket }: any = useSelector<RootState>((state) => state.socket);
     const [createNotification, { loading: loadingCreateNotification }] =
         useMutation<createNotificationResponse, NotificationInput>(
             Notification_OPERATIONS.Mutations.createNotification
@@ -83,8 +80,8 @@ const NotFriendComponent: NextPage<NotFriendComponentProps> = ({
                 return;
             }
 
-            toast.success('Send request added friend success');
-            socket?.emit("updateNotification")
+            toast.success('Sent friend request success');
+            socket?.emit('updateNotification');
         } catch (err: any) {
             toast.error(err.message);
         }
@@ -94,7 +91,7 @@ const NotFriendComponent: NextPage<NotFriendComponentProps> = ({
         try {
             const { errors } = await deleteNotification({
                 variables: {
-                    userId: id
+                    userId: id,
                 },
                 refetchQueries: ['getMyCommunity', 'getMyNotifications'],
                 awaitRefetchQueries: true,
@@ -103,7 +100,7 @@ const NotFriendComponent: NextPage<NotFriendComponentProps> = ({
                 toast.error('Something wrong!');
             }
             toast.success('Cancel request successfully');
-            socket.emit("updateNotification")
+            socket.emit('updateNotification');
         } catch (err: any) {
             toast.error(err.message, { duration: 2000 });
         }
@@ -115,15 +112,19 @@ const NotFriendComponent: NextPage<NotFriendComponentProps> = ({
                 variables: {
                     userIdB,
                 },
-                refetchQueries: ['getMyCommunity', 'getMyNotifications' , 'getMyInfo'],
+                refetchQueries: [
+                    'getMyCommunity',
+                    'getMyNotifications',
+                    'getMyInfo',
+                ],
                 awaitRefetchQueries: true,
             });
 
             if (errors) {
                 toast.error('Something wrong!');
             }
-            toast.success("Add friend success");
-            socket?.emit("updateNotification")
+            toast.success('Add friend success');
+            socket?.emit('updateNotification');
         } catch (err: any) {
             toast.error(err.message);
         }
@@ -142,12 +143,13 @@ const NotFriendComponent: NextPage<NotFriendComponentProps> = ({
                 toast.error('Some thing wrong!');
                 return;
             }
-            toast.success("Unfollow user success")
-            socket?.emit("updateNotification")
-        } catch (error: any){
+            toast.success('Unfollow user success');
+            socket?.emit('updateNotification');
+        } catch (error: any) {
             toast.error(error.message);
-        }}
-    
+        }
+    };
+
     const handleFollowUser = async () => {
         try {
             const { errors } = await followUser({
@@ -162,13 +164,12 @@ const NotFriendComponent: NextPage<NotFriendComponentProps> = ({
                 return;
             }
 
-            toast.success("Follow user success")
-            socket?.emit("updateNotification")
+            toast.success('Follow user success');
+            socket?.emit('updateNotification');
         } catch (error: any) {
             toast.error(error.message);
         }
-    }
-
+    };
 
     return (
         <div className="bg-light flex-col space-y-4 p-4 rounded-xl border-[1px] border-gray-300">
@@ -181,7 +182,7 @@ const NotFriendComponent: NextPage<NotFriendComponentProps> = ({
                     />
                 </Link>
                 <div className="flex-col flex-1">
-                <Link href={`/profile?id=${id}`}>
+                    <Link href={`/profile?id=${id}`}>
                         <h1 className="text-dark hover:underline cursor-pointer">
                             {name}
                         </h1>
@@ -197,63 +198,76 @@ const NotFriendComponent: NextPage<NotFriendComponentProps> = ({
                 </div>
             </div>
 
-            {facebookUrl || twitterUrl || instagramUrl || linkedinUrl &&
-            <div className="flex justify-center items-center space-x-2">
-                {facebookUrl &&
-                <Link href={facebookUrl || 'https://www.facebook.com/'}>
-                    <BsFacebook className="text-xl text-primary" />
-                </Link>
-                }
-                {twitterUrl &&
-                <Link href={twitterUrl || 'https://twitter.com/'}>
-                    <IoLogoTwitter className="text-xl text-primary" />
-                </Link>
-                }
-                
-                {instagramUrl &&
-                <Link href={instagramUrl || 'https://www.instagram.com/'}>
-                    <BsInstagram className="text-2xl bg-gradient-to-tr from-[#f79402] via-[#f70a59] to-pink-[#f501c1] rounded-xl overflow-hidden text-white" />
-                </Link>
-                }
+            {facebookUrl ||
+                twitterUrl ||
+                instagramUrl ||
+                (linkedinUrl && (
+                    <div className="flex justify-center items-center space-x-2">
+                        {facebookUrl && (
+                            <Link
+                                href={
+                                    facebookUrl || 'https://www.facebook.com/'
+                                }>
+                                <BsFacebook className="text-xl text-primary" />
+                            </Link>
+                        )}
+                        {twitterUrl && (
+                            <Link href={twitterUrl || 'https://twitter.com/'}>
+                                <IoLogoTwitter className="text-xl text-primary" />
+                            </Link>
+                        )}
 
-                {linkedinUrl &&
-                <Link href={linkedinUrl || 'https://www.linkedin.com/'}>
-                    <AiFillLinkedin className="text-2xl text-[#0A66C2]" />
-                </Link>
-                }
-            </div>
-            }
-            
+                        {instagramUrl && (
+                            <Link
+                                href={
+                                    instagramUrl || 'https://www.instagram.com/'
+                                }>
+                                <BsInstagram className="text-2xl bg-gradient-to-tr from-[#f79402] via-[#f70a59] to-pink-[#f501c1] rounded-xl overflow-hidden text-white" />
+                            </Link>
+                        )}
+
+                        {linkedinUrl && (
+                            <Link
+                                href={
+                                    linkedinUrl || 'https://www.linkedin.com/'
+                                }>
+                                <AiFillLinkedin className="text-2xl text-[#0A66C2]" />
+                            </Link>
+                        )}
+                    </div>
+                ))}
+
             <div className="flex gap-2 justify-around">
-                  {!isFollowed && !isFollowing &&
+                {!isFollowed &&
+                    !isFollowing &&
                     (loadingUnfollow ? (
                         <button className="grid place-items-center hover:bg-opacity-70 w-1/2 py-2 rounded-lg bg-gray-200 text-dark cursor-not-allowed">
                             <AiOutlineLoading3Quarters className="animate-spin transition-all duration-500 ease-linear text-light" />
                         </button>
                     ) : (
                         <button
-                        onClick={handleFollowUser}
-                        className="hover:bg-opacity-70 w-1/2 p-1 rounded-lg bg-gray-200 text-dark font-semibold text-sm">
+                            onClick={handleFollowUser}
+                            className="hover:bg-opacity-70 w-1/2 p-1 rounded-lg bg-gray-200 text-dark font-semibold text-sm">
                             Follow
                         </button>
                     ))}
 
-                   {isFollowed &&
+                {isFollowed &&
                     (loadingUnfollow ? (
                         <button className="flex space-x-2 justify-center items-center hover:bg-opacity-70 w-1/2 py-2 rounded-lg bg-gray-200 font-semibold text-sm text-dark cursor-not-allowed">
-                        <AiOutlineLoading3Quarters className="animate-spin transition-all duration-500 ease-linear " />
-                        <span>UnFollow</span>
-                    </button>
+                            <AiOutlineLoading3Quarters className="animate-spin transition-all duration-500 ease-linear " />
+                            <span>UnFollow</span>
+                        </button>
                     ) : (
                         <button
-                        onClick={unFollowings}
-                        className="hover:bg-opacity-70 w-1/2 p-1 rounded-lg bg-gray-200 text-dark font-semibold text-sm">
+                            onClick={unFollowings}
+                            className="hover:bg-opacity-70 w-1/2 p-1 rounded-lg bg-gray-200 text-dark font-semibold text-sm">
                             UnFollow
                         </button>
-                    ))} 
+                    ))}
 
-
-                    {isFollowing && !isFollowed &&
+                {isFollowing &&
+                    !isFollowed &&
                     (loadingFollowUser ? (
                         <button className="flex space-x-2 justify-center items-center hover:bg-opacity-70 w-1/2 py-2 rounded-lg bg-gray-200 font-semibold text-sm text-dark cursor-not-allowed">
                             <AiOutlineLoading3Quarters className="animate-spin transition-all duration-500 ease-linear " />
@@ -261,8 +275,8 @@ const NotFriendComponent: NextPage<NotFriendComponentProps> = ({
                         </button>
                     ) : (
                         <button
-                        onClick={handleFollowUser}
-                        className="hover:bg-opacity-70 w-1/2 p-1 rounded-lg bg-gray-200 text-dark font-semibold text-sm">
+                            onClick={handleFollowUser}
+                            className="hover:bg-opacity-70 w-1/2 p-1 rounded-lg bg-gray-200 text-dark font-semibold text-sm">
                             Follow back
                         </button>
                     ))}
