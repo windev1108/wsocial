@@ -61,9 +61,9 @@ const Post: NextPage<PostProps> = ({
 }) => {
     const router = useRouter();
     const dispatch = useDispatch();
-    const { t } = useTranslation()
-    const { users } : any = useSelector<RootState>(state => state.session)
-    const { socket } : any = useSelector<RootState>(state => state.socket)
+    const { t } = useTranslation();
+    const { users }: any = useSelector<RootState>((state) => state.session);
+    const { socket }: any = useSelector<RootState>((state) => state.socket);
     const { data: session } = useSession();
     const [deletePost, { loading: loadingDelete }] = useMutation(
         POST_MUTATIONS.Mutations.deletePost
@@ -93,7 +93,7 @@ const Post: NextPage<PostProps> = ({
             if (files.length > 0) {
                 destroyMultiple(files);
             }
-            socket.emit("updatePost")
+            socket.emit('updatePost');
         } catch (error: any) {
             toast.error(error.message);
         }
@@ -115,13 +115,12 @@ const Post: NextPage<PostProps> = ({
                 return;
             }
 
-            socket?.emit("updatePost")
-            socket?.emit("updateNotification")
+            socket?.emit('updatePost');
+            socket?.emit('updateNotification');
         } catch (error: any) {
             toast.error(error?.message as string);
         }
     };
-
 
     const handleOpenSharePost = () => {
         try {
@@ -136,7 +135,7 @@ const Post: NextPage<PostProps> = ({
                             files: postSharedOf.files,
                             viewer: postSharedOf.viewer,
                             updatedAt: postSharedOf.updatedAt,
-                            activity: postSharedOf.activity
+                            activity: postSharedOf.activity,
                         },
                     })
                 );
@@ -165,64 +164,103 @@ const Post: NextPage<PostProps> = ({
         setState({ ...state, isOpenFormComment: !isOpenFormComment });
     }, [isOpenFormComment]);
 
-    
     return (
-        <div className="bg-light flex-col gap-2 shadow-sm border-[1px] border-gray-200 rounded-lg h-auto">
+        <div className="bg-light flex-col gap-2 shadow-sm border-[1px] border-gray-200 rounded-lg h-auto overflow-hidden">
             <div className="flex gap-4 items-center justify-between p-4">
                 <div className="flex space-x-4">
                     <div className="group relative">
-                    <Link href={`/profile?id=${author.id}`}>
-                        <Image
-                            width={100}
-                            height={100}
-                            className="cursor-pointer object-cover w-10 h-10  rounded-full"
-                            src={author.image}
-                            alt=""
-                        />
-                    </Link>
+                        <Link href={`/profile?id=${author.id}`}>
+                            <Image
+                                width={100}
+                                height={100}
+                                className="cursor-pointer object-cover w-10 h-10  rounded-full"
+                                src={author.image}
+                                alt=""
+                            />
+                        </Link>
                         <div className="group-hover:block hidden">
                             <CardUser
-                            isFollowing={author?.followers?.some(u => u.id === session?.user?.id)!}
-                            isOnline={Boolean(users.find((u : SocketUser) => u.userId === author.id)?.isOnline)}
-                            isMySelf={author.id === session?.user?.id}
-                            lastTime={users.find((u : SocketUser) => u.userId === author.id)?.lastTime || null}
-                            isFriend={author.friends?.some(u => u.id === session?.user?.id)!}
-                            user={author}
+                                isFollowing={
+                                    author?.followers?.some(
+                                        (u) => u.id === session?.user?.id
+                                    )!
+                                }
+                                isOnline={Boolean(
+                                    users.find(
+                                        (u: SocketUser) =>
+                                            u.userId === author.id
+                                    )?.isOnline
+                                )}
+                                isMySelf={author.id === session?.user?.id}
+                                lastTime={
+                                    users.find(
+                                        (u: SocketUser) =>
+                                            u.userId === author.id
+                                    )?.lastTime || null
+                                }
+                                isFriend={
+                                    author.friends?.some(
+                                        (u) => u.id === session?.user?.id
+                                    )!
+                                }
+                                user={author}
                             />
                         </div>
                     </div>
                     <div className="flex-col">
                         <div className="group relative">
-                        <Link href={`/profile?id=${author.id}`}>
-                            <h1 className="text-dark leading-2 lg:text-lg text-sm font-semibold cursor-pointer w-auto">
-                                {author.name}
+                            <Link href={`/profile?id=${author.id}`}>
+                                <h1 className="text-dark leading-2 lg:text-lg text-sm font-semibold cursor-pointer w-auto">
+                                    {author.name}
                                     <span className="lg:inline-block inline mx-1 font-normal lg:text-base text-sm text-text">
-                                        {author.gender === 'MALE' &&  activity === 'UPDATE_AVATAR' && 
-                                          t('common:updated_his_profile_picture')
-                                        }
-                                        {author.gender === 'FEMALE' &&  activity === 'UPDATE_AVATAR' && 
-                                          t('common:updated_her_profile_picture')
-                                        }
+                                        {author.gender === 'MALE' &&
+                                            activity === 'UPDATE_AVATAR' &&
+                                            t(
+                                                'common:updated_his_profile_picture'
+                                            )}
+                                        {author.gender === 'FEMALE' &&
+                                            activity === 'UPDATE_AVATAR' &&
+                                            t(
+                                                'common:updated_her_profile_picture'
+                                            )}
 
-                                        {author.gender === 'FEMALE' &&  activity === 'UPDATE_BACKGROUND' && 
-                                          t('common:updated_her_cover_photo')
-                                        }
-                                         {author.gender === 'MALE' &&  activity === 'UPDATE_BACKGROUND' && 
-                                          t('common:updated_his_cover_photo')
-                                        }
-                                  </span>
-                            </h1>
-                        </Link>
-                        <div className="group-hover:block hidden">
-                            <CardUser
-                            isFollowing={author?.followers?.some(u => u.id === session?.user?.id)!}
-                            isOnline={Boolean(users.find((u : SocketUser) => u.userId === author.id)?.isOnline)}
-                            isMySelf={author.id === session?.user?.id}
-                            lastTime={users.find((u : SocketUser) => u.userId === author.id)?.lastTime || null}
-                            isFriend={author.friends?.some(u => u.id === session?.user?.id)!}
-                            user={author}
-                            />
-                        </div>
+                                        {author.gender === 'FEMALE' &&
+                                            activity === 'UPDATE_BACKGROUND' &&
+                                            t('common:updated_her_cover_photo')}
+                                        {author.gender === 'MALE' &&
+                                            activity === 'UPDATE_BACKGROUND' &&
+                                            t('common:updated_his_cover_photo')}
+                                    </span>
+                                </h1>
+                            </Link>
+                            <div className="group-hover:block hidden">
+                                <CardUser
+                                    isFollowing={
+                                        author?.followers?.some(
+                                            (u) => u.id === session?.user?.id
+                                        )!
+                                    }
+                                    isOnline={Boolean(
+                                        users.find(
+                                            (u: SocketUser) =>
+                                                u.userId === author.id
+                                        )?.isOnline
+                                    )}
+                                    isMySelf={author.id === session?.user?.id}
+                                    lastTime={
+                                        users.find(
+                                            (u: SocketUser) =>
+                                                u.userId === author.id
+                                        )?.lastTime || null
+                                    }
+                                    isFriend={
+                                        author.friends?.some(
+                                            (u) => u.id === session?.user?.id
+                                        )!
+                                    }
+                                    user={author}
+                                />
+                            </div>
                         </div>
                         <div className="flex items-center space-x-2">
                             <span className="text-gray-500 text-[11px] font-semibold">
@@ -235,9 +273,11 @@ const Post: NextPage<PostProps> = ({
                                     <RiGitRepositoryPrivateFill />
                                 )}
                                 <span className="first-letter:uppercase whitespace-nowrap group-hover:scale-100 duration-500 transition-all  origin-top-left scale-0 absolute top-[100%] left-[50%] bg-black bg-opacity-60 text-light rounded-md px-2 py-1 text-sm shadow-md">
-                                    {viewer === 'FRIENDS' && t('common:friends')}
+                                    {viewer === 'FRIENDS' &&
+                                        t('common:friends')}
                                     {viewer === 'PUBLIC' && t('common:public')}
-                                    {viewer === 'PRIVATE' && t('common:private')}
+                                    {viewer === 'PRIVATE' &&
+                                        t('common:private')}
                                 </span>
                             </div>
                         </div>
@@ -246,9 +286,9 @@ const Post: NextPage<PostProps> = ({
                 <div className="relative group hover:bg-secondary rounded-md p-1 z-[10]">
                     <BsThreeDots className="text-xl text-dark" />
                     <div className="group-hover:block rounded-lg absolute hidden top-[100%] right-0 bg-secondary shadow-md">
-                        <button 
-                        onClick={handleOpenSharePost}
-                        className="whitespace-nowrap flex space-x-2 items-center font-semibold cursor-pointer px-4 py-2 hover:bg-gray-200 rounded-t-lg">
+                        <button
+                            onClick={handleOpenSharePost}
+                            className="whitespace-nowrap flex space-x-2 items-center font-semibold cursor-pointer px-4 py-2 hover:bg-gray-200 rounded-t-lg">
                             <AiOutlineShareAlt className="text-[#ffab00]" />
                             <span>{t('common:share')}</span>
                         </button>
@@ -258,82 +298,86 @@ const Post: NextPage<PostProps> = ({
                                     disabled={loadingDelete}
                                     className="w-full whitespace-nowrap flex space-x-2 items-center font-semibold px-4 py-2 hover:bg-gray-200 rounded-b-lg cursor-not-allowed ">
                                     <AiOutlineLoading3Quarters className="animate-spin transition-all duration-500 ease-linear text-primary" />
-                                    <span className="first-letter:uppercase">{t('common:delete')}</span>
+                                    <span className="first-letter:uppercase">
+                                        {t('common:delete')}
+                                    </span>
                                 </button>
                             ) : (
                                 <button
                                     onClick={handleDeletePost}
                                     className="w-full whitespace-nowrap flex space-x-2 items-center font-semibold cursor-pointer px-4 py-2 hover:bg-gray-200 rounded-b-lg">
                                     <AiOutlineDelete className="text-red-400" />
-                                    <span className="first-letter:uppercase">{t('common:delete')}</span>
+                                    <span className="first-letter:uppercase">
+                                        {t('common:delete')}
+                                    </span>
                                 </button>
                             ))}
                     </div>
                 </div>
             </div>
             <div className="flex lg:px-4 lg:py-4 px-4 py-2">
-                <span className="text-dark lg:text-base text-sm">{content}</span>
+                <span className="text-dark lg:text-base text-sm">
+                    {content}
+                </span>
             </div>
 
-            {activity === 'UPDATE_AVATAR' && (
-                <div className="relative w-full lg:h-[30rem] h-[10rem]">
-                    <div className="h-full w-full">
-                        {author.background ? (
-                            <Image
-                                src={author.background}
-                                width={1000}
-                                height={1000}
-                                alt=""
-                                className="h-1/2 w-full object-cover"
-                            />
-                        ) : (
-                            <div className="h-1/2 w-full bg-gradient-to-t from-gray-200 to-light"></div>
-                        )}
+            <div className="h-h-auto">
+                {activity === 'UPDATE_AVATAR' && (
+                    <div className="relative w-full lg:h-[90%] h-[10rem]">
+                        <div className="h-full w-full">
+                            {author.background ? (
+                                <Image
+                                    src={author.background}
+                                    width={1000}
+                                    height={1000}
+                                    alt=""
+                                    className="h-1/2 w-full object-cover"
+                                />
+                            ) : (
+                                <div className="h-1/2 w-full bg-gradient-to-t from-gray-200 to-light"></div>
+                            )}
+                        </div>
+                        <div className="absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] border-white border-[5px] overflow-hidden rounded-full lg:w-[30rem] w-[11rem] h-[11rem] lg:h-[20rem]">
+                            <Link
+                                href={`/post/${postId}`}
+                                className="w-full h-full">
+                                <Image
+                                    src={files[0].url}
+                                    width={1000}
+                                    height={1000}
+                                    alt=""
+                                    className="w-full h-full object-fill"
+                                />
+                            </Link>
+                        </div>
                     </div>
-                    <div className="absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] border-white border-[5px] overflow-hidden rounded-full lg:w-[30rem] w-[11rem] h-[11rem] lg:h-[30rem]">
-                        <Link
-                            href={`/post/${postId}`}
-                            className="w-full h-full"
-                        >
-                            <Image
-                                src={files[0].url}
-                                width={1000}
-                                height={1000}
-                                alt=""
-                                className="w-full h-full object-fill"
-                            />
-                        </Link>
+                )}
+
+                {activity === 'UPDATE_BACKGROUND' && (
+                    <div className="relative w-full h-[90%]">
+                        <div className="h-full w-full">
+                            <Link
+                                href={`/post/${postId}`}
+                                className="w-full h-full">
+                                <Image
+                                    src={author?.background!}
+                                    width={1000}
+                                    height={1000}
+                                    alt=""
+                                    className="w-full h-full object-cover"
+                                />
+                            </Link>
+                        </div>
                     </div>
-                </div>
-            )}
+                )}
 
-            {activity === 'UPDATE_BACKGROUND' && (
-                <div className="relative w-full h-[30rem]">
-                    <div className="h-full w-full">
-                        <Link
-                            href={`/post/${postId}`}
-                            className="w-full h-full"
-                        >
-                            <Image
-                                src={author?.background!}
-                                width={1000}
-                                height={1000}
-                                alt=""
-                                className="w-full h-full object-cover"
-                            />
-                        </Link>
-                    </div>
-                </div>
-            )}
-
-
-            {activity === "CREATED_POST" &&
-                files?.length > 0 && (
+                {activity === 'CREATED_POST' && files?.length > 0 && (
                     <div
-                        className={`${files.length > 3
-                            ? 'grid-cols-3 grid-rows-3'
-                            : `grid-cols-${files.length} grid-rows-1`
-                            } grid w-full gap-1 lg:h-[30rem] h-auto`}>
+                        className={`${
+                            files.length > 3
+                                ? 'grid-cols-3 grid-rows-3'
+                                : `grid-cols-${files.length} grid-rows-1`
+                        } grid w-full gap-1 lg:h-[90%] h-auto`}>
                         {files.length > 4 ? (
                             <>
                                 {files.slice(0, 3).map((file, index) =>
@@ -341,18 +385,21 @@ const Post: NextPage<PostProps> = ({
                                         <Link
                                             key={file.url}
                                             href={`/post/${postId}?q=${file.id}`}
-                                            className={`${files.length >= 3 &&
+                                            className={`${
+                                                files.length >= 3 &&
                                                 index === 0 &&
                                                 'row-span-3 col-span-2'
-                                                } w-full`}>
+                                            } w-full`}>
                                             <video
-                                                className={`${files.length >= 3 &&
+                                                className={`${
+                                                    files.length >= 3 &&
                                                     index === 0 &&
                                                     'row-span-3 col-span-2'
-                                                    } ${files.length === 1
-                                                        ? 'object-contain lg:h-[35rem] h-auto'
+                                                } ${
+                                                    files.length === 1
+                                                        ? 'object-contain h-auto'
                                                         : 'object-cover h-full'
-                                                    } w-full`}
+                                                } w-full`}
                                                 controls={index === 0}
                                                 src={file.url}></video>
                                         </Link>
@@ -360,17 +407,19 @@ const Post: NextPage<PostProps> = ({
                                         <Link
                                             key={file.url}
                                             href={`/post/${postId}?q=${file.id}`}
-                                            className={`${files.length >= 3 &&
+                                            className={`${
+                                                files.length >= 3 &&
                                                 index === 0 &&
                                                 'row-span-3 col-span-2'
-                                                } w-full`}>
+                                            } w-full`}>
                                             <Image
                                                 width={1000}
                                                 height={1000}
-                                                className={`${files.length === 1
-                                                    ? 'object-contain lg:h-[30rem] h-auto'
-                                                    : 'object-cover h-full '
-                                                    }w-full`}
+                                                className={`${
+                                                    files.length === 1
+                                                        ? 'object-contain h-full'
+                                                        : 'object-cover h-full '
+                                                }w-full`}
                                                 src={file.url}
                                                 alt=""
                                             />
@@ -383,10 +432,11 @@ const Post: NextPage<PostProps> = ({
                                         href={`/post/${postId}?q=${files[3].id}`}
                                         className={`w-full`}>
                                         <video
-                                            className={` ${files.length === 1
-                                                ? 'object-contain lg:h-[35rem] h-auto'
-                                                : 'object-cover h-full '
-                                                }w-full`}
+                                            className={` ${
+                                                files.length === 1
+                                                    ? 'object-contain  h-auto'
+                                                    : 'object-cover h-full '
+                                            }w-full`}
                                             src={files[3].url}></video>
                                     </Link>
                                 ) : (
@@ -402,8 +452,9 @@ const Post: NextPage<PostProps> = ({
                                             alt=""
                                         />
                                         <div className="absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]">
-                                            <span className="font-semibold text-light lg:text-5xl text-3xl">{`+${files.slice(3).length
-                                                }`}</span>
+                                            <span className="font-semibold text-light lg:text-5xl text-3xl">{`+${
+                                                files.slice(3).length
+                                            }`}</span>
                                         </div>
                                     </Link>
                                 )}
@@ -414,18 +465,21 @@ const Post: NextPage<PostProps> = ({
                                     <Link
                                         key={file.url}
                                         href={`/post/${postId}?q=${file.id}`}
-                                        className={`${files.length >= 3 &&
+                                        className={`${
+                                            files.length >= 3 &&
                                             index === 0 &&
                                             'row-span-3 col-span-2'
-                                            } w-full`}>
+                                        } w-full`}>
                                         <video
-                                            className={`${files.length >= 3 &&
+                                            className={`${
+                                                files.length >= 3 &&
                                                 index === 0 &&
                                                 'row-span-3 col-span-2'
-                                                } ${files.length === 1
-                                                    ? 'object-contain h-[35rem]'
+                                            } ${
+                                                files.length === 1
+                                                    ? 'object-contain h-full'
                                                     : 'object-cover h-full '
-                                                }w-full`}
+                                            }w-full`}
                                             controls={index === 0}
                                             src={file.url}></video>
                                     </Link>
@@ -433,17 +487,19 @@ const Post: NextPage<PostProps> = ({
                                     <Link
                                         key={file.url}
                                         href={`/post/${postId}?q=${file.id}`}
-                                        className={`${files.length >= 3 &&
+                                        className={`${
+                                            files.length >= 3 &&
                                             index === 0 &&
                                             'row-span-3 col-span-2'
-                                            }  w-full`}>
+                                        }  w-full`}>
                                         <Image
                                             width={1000}
                                             height={1000}
-                                            className={`${files.length === 1
-                                                ? 'object-contain h-full'
-                                                : 'object-cover h-full '
-                                                }w-full`}
+                                            className={`${
+                                                files.length === 1
+                                                    ? 'object-contain h-full'
+                                                    : 'object-cover h-full '
+                                            }w-full`}
                                             src={file.url}
                                             alt=""
                                         />
@@ -452,19 +508,17 @@ const Post: NextPage<PostProps> = ({
                             )
                         )}
                     </div>
-                )
+                )}
 
-            }
-
-            {activity === "CREATED_POST" &&
-                postSharedOf && (
-                    <div className="flex-col border rounded-xl mx-4 h-fit">
+                {activity === 'CREATED_POST' && postSharedOf && (
+                    <div className="flex-col border rounded-xl mx-4 h-[90%]">
                         {postSharedOf?.files?.length! > 0 && (
                             <div
-                                className={`${postSharedOf?.files?.length! > 3
-                                    ? 'grid-cols-3 grid-rows-3 h-fit'
-                                    : `grid-cols-${files.length} grid-rows-1 h-fit`
-                                    } grid w-full gap-1 h-[30rem]`}>
+                                className={`${
+                                    postSharedOf?.files?.length! > 3
+                                        ? 'grid-cols-3 grid-rows-3 h-fit'
+                                        : `grid-cols-${files.length} grid-rows-1 h-full`
+                                } grid w-full gap-1 h-full`}>
                                 {postSharedOf?.files?.length! > 4 ? (
                                     <>
                                         {postSharedOf?.files
@@ -474,40 +528,56 @@ const Post: NextPage<PostProps> = ({
                                                     <Link
                                                         key={file.url}
                                                         href={`/post/${postSharedOf.id}?q=${file.id}`}
-                                                        className={`${postSharedOf?.files
-                                                            ?.length! >= 3 &&
-                                                            index === 0 &&
-                                                            'row-span-3 col-span-2'
-                                                            } w-full`}>
-                                                        <video
-                                                            className={`${postSharedOf?.files
+                                                        className={`${
+                                                            postSharedOf?.files
                                                                 ?.length! >=
                                                                 3 &&
+                                                            index === 0 &&
+                                                            'row-span-3 col-span-2'
+                                                        } w-full`}>
+                                                        <video
+                                                            className={`${
+                                                                postSharedOf
+                                                                    ?.files
+                                                                    ?.length! >=
+                                                                    3 &&
                                                                 index === 0 &&
                                                                 'row-span-3 col-span-2'
-                                                                } ${postSharedOf?.files
-                                                                    ?.length! === 1
-                                                                    ? 'object-contain lg:h-[35rem] h-full'
+                                                            } ${
+                                                                postSharedOf
+                                                                    ?.files
+                                                                    ?.length! ===
+                                                                1
+                                                                    ? 'object-contain  h-full'
                                                                     : 'object-cover h-full'
-                                                                } w-full`}
-                                                            controls={index === 0}
-                                                            src={file.url}></video>
+                                                            } w-full`}
+                                                            controls={
+                                                                index === 0
+                                                            }
+                                                            src={
+                                                                file.url
+                                                            }></video>
                                                     </Link>
                                                 ) : (
                                                     <Link
                                                         key={file.url}
                                                         href={`/post/${postSharedOf.id}?q=${file.id}`}
-                                                        className={`${postSharedOf?.files
-                                                            ?.length! >= 3 &&
+                                                        className={`${
+                                                            postSharedOf?.files
+                                                                ?.length! >=
+                                                                3 &&
                                                             index === 0 &&
                                                             'row-span-3 col-span-2'
-                                                            }  w-full`}>
+                                                        }  w-full`}>
                                                         <Image
-                                                            className={`${postSharedOf?.files
-                                                                ?.length! === 1
-                                                                ? 'object-contain lg:h-[35rem] h-full'
-                                                                : 'object-cover h-full '
-                                                                }w-full`}
+                                                            className={`${
+                                                                postSharedOf
+                                                                    ?.files
+                                                                    ?.length! ===
+                                                                1
+                                                                    ? 'object-contain  h-full'
+                                                                    : 'object-cover h-full '
+                                                            }w-full`}
                                                             width={100}
                                                             height={100}
                                                             src={file.url}
@@ -524,13 +594,15 @@ const Post: NextPage<PostProps> = ({
                                                 href={`/post/${postSharedOf.id}?q=${postSharedOf?.files[3].id}`}
                                                 className={`w-full`}>
                                                 <video
-                                                    className={` ${postSharedOf?.files
-                                                        .length === 1
-                                                        ? 'object-contain lg:h-[35rem] h-auto'
-                                                        : 'object-cover h-full '
-                                                        }w-full`}
+                                                    className={` ${
+                                                        postSharedOf?.files
+                                                            .length === 1
+                                                            ? 'object-contain  h-auto'
+                                                            : 'object-cover h-full '
+                                                    }w-full`}
                                                     src={
-                                                        postSharedOf?.files[3].url
+                                                        postSharedOf?.files[3]
+                                                            .url
                                                     }></video>
                                             </Link>
                                         ) : (
@@ -542,13 +614,18 @@ const Post: NextPage<PostProps> = ({
                                                     width={100}
                                                     height={100}
                                                     className={`object-cover w-full h-auto`}
-                                                    src={postSharedOf?.files[3].url}
+                                                    src={
+                                                        postSharedOf?.files[3]
+                                                            .url
+                                                    }
                                                     alt=""
                                                 />
                                                 <div className="absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%]">
-                                                    <span className="font-semibold text-light lg:text-5xl text-3xl">{`+${postSharedOf?.files.slice(3)
-                                                        .length
-                                                        }`}</span>
+                                                    <span className="font-semibold text-light lg:text-5xl text-3xl">{`+${
+                                                        postSharedOf?.files.slice(
+                                                            3
+                                                        ).length
+                                                    }`}</span>
                                                 </div>
                                             </Link>
                                         )}
@@ -560,21 +637,24 @@ const Post: NextPage<PostProps> = ({
                                                 <Link
                                                     key={file.url}
                                                     href={`/post/${postId}?q=${file.id}`}
-                                                    className={`${postSharedOf?.files
-                                                        .length >= 3 &&
+                                                    className={`${
+                                                        postSharedOf?.files
+                                                            .length >= 3 &&
                                                         index === 0 &&
                                                         'row-span-3 col-span-2'
-                                                        } w-full`}>
+                                                    } w-full`}>
                                                     <video
-                                                        className={`${postSharedOf?.files
-                                                            .length >= 3 &&
+                                                        className={`${
+                                                            postSharedOf?.files
+                                                                .length >= 3 &&
                                                             index === 0 &&
                                                             'row-span-3 col-span-2'
-                                                            } ${postSharedOf?.files
+                                                        } ${
+                                                            postSharedOf?.files
                                                                 .length === 1
                                                                 ? 'object-contain h-[35rem]'
                                                                 : 'object-cover h-full '
-                                                            }w-full`}
+                                                        }w-full`}
                                                         controls={index === 0}
                                                         src={file.url}></video>
                                                 </Link>
@@ -582,19 +662,21 @@ const Post: NextPage<PostProps> = ({
                                                 <Link
                                                     key={file.url}
                                                     href={`/post/${postId}?q=${file.id}`}
-                                                    className={`${postSharedOf?.files
-                                                        .length >= 3 &&
+                                                    className={`${
+                                                        postSharedOf?.files
+                                                            .length >= 3 &&
                                                         index === 0 &&
                                                         'row-span-3 col-span-2'
-                                                        } w-full`}>
+                                                    } w-full`}>
                                                     <Image
                                                         width={100}
                                                         height={100}
-                                                        className={`${postSharedOf?.files
-                                                            .length === 1
-                                                            ? 'object-contain h-[35rem]'
-                                                            : 'object-cover h-auto '
-                                                            }w-full`}
+                                                        className={`${
+                                                            postSharedOf?.files
+                                                                .length === 1
+                                                                ? 'object-contain h-[35rem]'
+                                                                : 'object-cover h-auto '
+                                                        }w-full`}
                                                         src={file.url}
                                                         alt=""
                                                     />
@@ -632,27 +714,25 @@ const Post: NextPage<PostProps> = ({
                                             ).fromNow()}
                                         </span>
                                         <div className="relative group">
-                                            {postSharedOf.viewer === 'FRIENDS' && (
-                                                <FaUserFriends />
-                                            )}
-                                            {postSharedOf.viewer === 'PUBLIC' && (
-                                                <MdPublic />
-                                            )}
-                                            {postSharedOf.viewer === 'PRIVATE' && (
+                                            {postSharedOf.viewer ===
+                                                'FRIENDS' && <FaUserFriends />}
+                                            {postSharedOf.viewer ===
+                                                'PUBLIC' && <MdPublic />}
+                                            {postSharedOf.viewer ===
+                                                'PRIVATE' && (
                                                 <RiGitRepositoryPrivateFill />
                                             )}
                                             <span className="first-letter:uppercase whitespace-nowrap group-hover:scale-100 duration-500 transition-all  origin-top-left scale-0 absolute top-[100%] left-[50%] bg-black bg-opacity-60 text-light rounded-md px-2 py-1 text-sm shadow-md">
-                                               {postSharedOf.viewer === 'FRIENDS' && (
-                                                  t('common:friends')
-                                                )}
+                                                {postSharedOf.viewer ===
+                                                    'FRIENDS' &&
+                                                    t('common:friends')}
 
-                                              {postSharedOf.viewer === 'PUBLIC' && (
-                                                  t('common:public')
-                                                )}
-                                                 {postSharedOf.viewer === 'PRIVATE' && (
-                                                  t('common:private')
-                                                )}
-                                                
+                                                {postSharedOf.viewer ===
+                                                    'PUBLIC' &&
+                                                    t('common:public')}
+                                                {postSharedOf.viewer ===
+                                                    'PRIVATE' &&
+                                                    t('common:private')}
                                             </span>
                                         </div>
                                     </div>
@@ -667,91 +747,98 @@ const Post: NextPage<PostProps> = ({
                     </div>
                 )}
 
-            <div className="flex justify-between p-4">
-                <div
-                    onClick={() =>
-                        dispatch(setShowLikers({ likers: likes, isOpen: true }))
-                    }
-                    className="group relative flex cursor-pointer">
-                    <div className="group-hover:scale-100 group-hover:opacity-100  duration-500 transition-all ease-in-out origin-bottom scale-0 opacity-0 absolute -top-[100%] right-0% bg-black bg-opacity-70 px-2 py-1 shadow-md rounded-md">
-                        <span className="text-light text-sm whitespace-nowrap ">
-                            The people liked
-                        </span>
-                    </div>
-                    {likes?.slice(0, 3).map((like: any, index: number) =>
-                        index === 0 ? (
-                            <div
-                                key={like.id}
-                                className={`border-light z-[${index}]  w-8 h-8 border-[3px]  rounded-full overflow-hidden`}>
-                                <Image
-                                    width={100}
-                                    height={100}
-                                    className="object-cover w-full h-full"
-                                    src={like.image}
-                                    alt=""
-                                />
-                            </div>
-                        ) : (
-                            <div
-                                key={like.id}
-                                className={`border-light z-[${index * 3
-                                    }] -translate-x-${index * 3
-                                    } w-8 h-8 border-[3px] rounded-full overflow-hidden`}>
-                                <Image
-                                    width={100}
-                                    height={100}
-                                    className={`object-cover w-full h-full`}
-                                    src={like.image}
-                                    alt=""
-                                />
-                            </div>
-                        )
-                    )}
-                    {likes?.slice(3).length > 0 && (
-                        <div className="border-light bg-gray-400 z-[4] -translate-x-9 flex justify-center items-center  rounded-full border-[2px] w-8 h-8 overflow-hidden">
-                            <span className="text-light">{`+${likes?.slice(3).length
-                                }`}</span>
+                <div className="flex justify-between p-4">
+                    <div
+                        onClick={() =>
+                            dispatch(
+                                setShowLikers({ likers: likes, isOpen: true })
+                            )
+                        }
+                        className="group relative flex cursor-pointer">
+                        <div className="group-hover:scale-100 group-hover:opacity-100  duration-500 transition-all ease-in-out origin-bottom scale-0 opacity-0 absolute -top-[100%] right-0% bg-black bg-opacity-70 px-2 py-1 shadow-md rounded-md">
+                            <span className="text-light text-sm whitespace-nowrap ">
+                                The people liked
+                            </span>
                         </div>
-                    )}
-                </div>
-                <div className="lowercase flex space-x-3 text-gray-500 lg:text-base text-sm">
-                    <span>{`${countComment} ${t('common:comment')}`}</span>
-                    <span>{`${countShares} ${t('common:share')}`}</span>
-                </div>
-            </div>
-
-            <div className="border-gray-300 grid grid-cols-3 border-t-[1px] p-2">
-                {isLoadingToggle ? (
-                    <button
-                        disabled={true}
-                        className="cursor-not-allowed rounded-xl py-2 flex justify-center items-center space-x-2">
-                        <AiOutlineLoading3Quarters className="animate-spin transition-all duration-500 ease-linear text-primary" />
-                    </button>
-                ) : (
-                    <button
-                        onClick={handleToggleLike}
-                        className={`${isLiked ? 'text-[#ed4956]' : 'text-text'
-                            }  hover:bg-gray-200 cursor-pointer rounded-xl py-2 flex justify-center items-center space-x-2 lg:text-base text-sm`}>
-                        {isLiked ? (
-                            <AiFillHeart className="lg:text-2xl text-xl" />
-                        ) : (
-                            <AiOutlineHeart className="lg:text-2xl text-xl" />
+                        {likes?.slice(0, 3).map((like: any, index: number) =>
+                            index === 0 ? (
+                                <div
+                                    key={like.id}
+                                    className={`border-light z-[${index}]  w-8 h-8 border-[3px]  rounded-full overflow-hidden`}>
+                                    <Image
+                                        width={100}
+                                        height={100}
+                                        className="object-cover w-full h-full"
+                                        src={like.image}
+                                        alt=""
+                                    />
+                                </div>
+                            ) : (
+                                <div
+                                    key={like.id}
+                                    className={`border-light z-[${
+                                        index * 3
+                                    }] -translate-x-${
+                                        index * 3
+                                    } w-8 h-8 border-[3px] rounded-full overflow-hidden`}>
+                                    <Image
+                                        width={100}
+                                        height={100}
+                                        className={`object-cover w-full h-full`}
+                                        src={like.image}
+                                        alt=""
+                                    />
+                                </div>
+                            )
                         )}
-                        <span>{t('common:like')}</span>
-                    </button>
-                )}
-                <div
-                    onClick={handleToggleFormComment}
-                    className="first-letter:uppercase text-text hover:bg-gray-200 cursor-pointer rounded-xl py-2 flex justify-center items-center space-x-2 lg:text-base text-sm">
-                    <FaRegComment className="lg:text-2xl text-lg" />
-                    <span>{t('common:comment')}</span>
+                        {likes?.slice(3).length > 0 && (
+                            <div className="border-light bg-gray-400 z-[4] -translate-x-9 flex justify-center items-center  rounded-full border-[2px] w-8 h-8 overflow-hidden">
+                                <span className="text-light">{`+${
+                                    likes?.slice(3).length
+                                }`}</span>
+                            </div>
+                        )}
+                    </div>
+                    <div className="lowercase flex space-x-3 text-gray-500 lg:text-base text-sm">
+                        <span>{`${countComment} ${t('common:comment')}`}</span>
+                        <span>{`${countShares} ${t('common:share')}`}</span>
+                    </div>
                 </div>
-                <button
-                    onClick={handleOpenSharePost}
-                    className="first-letter:uppercase text-text hover:bg-gray-200 cursor-pointer rounded-xl py-2 flex justify-center items-center space-x-2 lg:text-base text-sm">
-                    <RiShareForwardLine className="lg:text-xl text-xl" />
-                    <span>{t('common:share')}</span>
-                </button>
+
+                <div className="h-[10%] border-gray-300 grid grid-cols-3 border-t-[1px] p-2">
+                    {isLoadingToggle ? (
+                        <button
+                            disabled={true}
+                            className="cursor-not-allowed rounded-xl py-2 flex justify-center items-center space-x-2">
+                            <AiOutlineLoading3Quarters className="animate-spin transition-all duration-500 ease-linear text-primary" />
+                        </button>
+                    ) : (
+                        <button
+                            onClick={handleToggleLike}
+                            className={`${
+                                isLiked ? 'text-[#ed4956]' : 'text-text'
+                            }  hover:bg-gray-200 cursor-pointer rounded-xl py-2 flex justify-center items-center space-x-2 lg:text-base text-sm`}>
+                            {isLiked ? (
+                                <AiFillHeart className="lg:text-2xl text-xl" />
+                            ) : (
+                                <AiOutlineHeart className="lg:text-2xl text-xl" />
+                            )}
+                            <span>{t('common:like')}</span>
+                        </button>
+                    )}
+                    <div
+                        onClick={handleToggleFormComment}
+                        className="first-letter:uppercase text-text hover:bg-gray-200 cursor-pointer rounded-xl py-2 flex justify-center items-center space-x-2 lg:text-base text-sm">
+                        <FaRegComment className="lg:text-2xl text-lg" />
+                        <span>{t('common:comment')}</span>
+                    </div>
+                    <button
+                        onClick={handleOpenSharePost}
+                        className="first-letter:uppercase text-text hover:bg-gray-200 cursor-pointer rounded-xl py-2 flex justify-center items-center space-x-2 lg:text-base text-sm">
+                        <RiShareForwardLine className="lg:text-xl text-xl" />
+                        <span>{t('common:share')}</span>
+                    </button>
+                </div>
             </div>
             {isOpenFormComment && (
                 <FormComment
