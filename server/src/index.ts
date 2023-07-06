@@ -7,7 +7,6 @@ import { expressMiddleware } from "@apollo/server/express4";
 import express from "express";
 import { createServer } from "http";
 import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHttpServer";
-import { getSession } from "next-auth/react";
 import { WebSocketServer } from "ws";
 import { useServer } from "graphql-ws/lib/use/ws";
 // @ts-ignore
@@ -15,12 +14,19 @@ import resolvers from "./graphql/resolvers/index.ts";
 // @ts-ignore
 import typeDefs from "./graphql/schema/index.ts";
 // @ts-ignore
-import type { GraphQLContext,PeerUser,Session,SocketUser,SubscriptionContext,} from "./utils/types.ts";
+import type {
+  GraphQLContext,
+  PeerUser,
+  Session,
+  SocketUser,
+  SubscriptionContext,
+} from "./utils/types.ts";
 import * as dotenv from "dotenv";
 import cors from "cors";
 import bodyParser from "body-parser";
 import { PubSub } from "graphql-subscriptions";
 import { Server, Socket } from "socket.io";
+import axios from "axios";
 
 let users: SocketUser[] = [];
 
@@ -214,8 +220,11 @@ const main = async () => {
     bodyParser.json(),
     expressMiddleware(server, {
       context: async ({ req }): Promise<GraphQLContext> => {
-        const session = await getSession({ req });
-
+        const { data: session } = await axios.get(
+          `${process.env.BASE_URL}/api/auth/session`
+        );
+        console.log("sesion", session);
+        console.log("req", req);
         return { session: session as Session, prisma, pubsub };
       },
     })

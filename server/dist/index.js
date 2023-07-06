@@ -7,7 +7,6 @@ import { expressMiddleware } from "@apollo/server/express4";
 import express from "express";
 import { createServer } from "http";
 import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHttpServer";
-import { getSession } from "next-auth/react";
 import { WebSocketServer } from "ws";
 import { useServer } from "graphql-ws/lib/use/ws";
 // @ts-ignore
@@ -19,6 +18,7 @@ import cors from "cors";
 import bodyParser from "body-parser";
 import { PubSub } from "graphql-subscriptions";
 import { Server } from "socket.io";
+import axios from "axios";
 let users = [];
 const main = async() => {
     dotenv.config();
@@ -58,17 +58,17 @@ const main = async() => {
             console.log("users :", users);
             io.emit("users", users);
         });
-        socket.on("sendMessage", ({ sender, receiverId, message }) => {
+        socket.on("sendMessage", ({ sender, receiverId, message, }) => {
             socket.to(receiverId).emit("receive_message", {
                 sender: {
                     ...sender,
-                    isOnline: users.find((u) => u.userId === sender.id).isOnline,
-                    lastTime: users.find((u) => u.userId === sender.id).lastTime,
+                    isOnline: users.find((u) => u.userId === sender.id) ? .isOnline,
+                    lastTime: users.find((u) => u.userId === sender.id) ? .lastTime,
                 },
                 message,
             });
         });
-        socket.on("userTyping", ({ sender, receiverId, isTyping }) => {
+        socket.on("userTyping", ({ sender, receiverId, isTyping, }) => {
             socket.to(receiverId).emit("user-typing", { sender, isTyping });
         });
         socket.on("calling", ({ caller, receiverId }) => {
@@ -121,16 +121,14 @@ const main = async() => {
         return { session: null, prisma, pubsub };
     };
     const serverCleanup = useServer({
-            schema,
-            context: (ctx) => {
-                // This will be run every time the client sends a subscription request
-                // Returning an object will add that information to our
-                // GraphQL context, which all of our resolvers have access to.
-                return getSubscriptionContext(ctx);
-            },
+        schema,
+        context: (ctx) => {
+            // This will be run every time the client sends a subscription request
+            // Returning an object will add that information to our
+            // GraphQL context, which all of our resolvers have access to.
+            return getSubscriptionContext(ctx);
         },
-        wsServer
-    );
+    }, wsServer);
     // Set up ApolloServer.
     const server = new ApolloServer({
         schema,
@@ -155,17 +153,14 @@ const main = async() => {
         origin: process.env.BASE_URL,
         credentials: true,
     };
-    app.use(
-        "/graphql",
-        cors(corsOptions),
-        bodyParser.json(),
-        expressMiddleware(server, {
-            context: async({ req }) => {
-                const session = await getSession({ req });
-                return { session: session, prisma, pubsub };
-            },
-        })
-    );
+    app.use("/graphql", cors(corsOptions), bodyParser.json(), expressMiddleware(server, {
+        context: async({ req }) => {
+            const { data: session } = await axios.get(`${process.env.BASE_URL}/api/auth/session`);
+            console.log("sesion", session);
+            console.log("req", req);
+            return { session: session, prisma, pubsub };
+        },
+    }));
     const PORT = process.env.PORT || 5000;
     // Now that our HTTP server is fully set up, we can listen to it.
     await new Promise((resolve) => httpServer.listen({ port: PORT }, resolve));

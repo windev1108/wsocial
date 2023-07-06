@@ -34,18 +34,18 @@ export interface PeerUser {
 }
 
 export interface User {
-  id: String;
-  name: String;
-  nickname: String;
-  background: String;
+  id: string;
+  name: string;
+  nickname: string;
+  background: string;
   gender: Gender;
-  facebook: String;
-  instagram: String;
-  twitter: String;
-  linkedin: String;
+  facebook: string;
+  instagram: string;
+  twitter: string;
+  linkedin: string;
   phone: Number;
-  website: String;
-  liveAt: String;
+  website: string;
+  liveAt: string;
   birthday: Number;
   isSendAddFriend?: boolean;
 }
