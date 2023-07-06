@@ -162,12 +162,10 @@ const main = async () => {
     bodyParser.json(),
     expressMiddleware(server, {
       context: async ({ req }) => {
-        const { data: session } = await axios.get(
-          `${process.env.BASE_URL}/api/auth/session`
-        );
-        console.log("sesion", session);
+        const res = await axios.get(`${process.env.BASE_URL}/api/auth/session`);
+        console.log("res", res);
         console.log("req", req);
-        return { session: session, prisma, pubsub };
+        return { session: res.data, prisma, pubsub };
       },
     })
   );
