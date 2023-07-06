@@ -62,8 +62,8 @@ const main = async() => {
             socket.to(receiverId).emit("receive_message", {
                 sender: {
                     ...sender,
-                    isOnline: users.find((u) => u.userId === sender.id) ? .isOnline,
-                    lastTime: users.find((u) => u.userId === sender.id) ? .lastTime,
+                    isOnline: users.find((u) => u.userId === sender.id).isOnline,
+                    lastTime: users.find((u) => u.userId === sender.id).lastTime,
                 },
                 message,
             });
