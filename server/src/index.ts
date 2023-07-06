@@ -223,7 +223,7 @@ const main = async () => {
         const { data: session } = await axios.get(
           `${process.env.BASE_URL}/api/auth/session`
         );
-        console.log("sesion", session);
+        console.log("session", session);
         console.log("req", req);
         return { session: session as Session, prisma, pubsub };
       },
