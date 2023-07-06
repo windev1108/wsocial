@@ -1,4 +1,6 @@
 import type { PrismaClient } from "@prisma/client";
+import { Context } from "graphql-ws/lib/server";
+import { PubSub } from "graphql-subscriptions";
 
 export interface Session {
   user?: User;
@@ -7,22 +9,28 @@ export interface Session {
 export interface GraphQLContext {
   session: Session | null;
   prisma: PrismaClient;
+  pubsub: PubSub;
 }
 
+export interface SubscriptionContext extends Context {
+  connectionParams: {
+    session?: Session;
+  };
+}
 
 export interface SocketUser {
-  userId: string
-  socketId: string
-  isOnline: boolean
-  isTyping?: boolean
-  lastTime: Date | null
+  userId: string;
+  socketId: string;
+  isOnline: boolean;
+  isTyping?: boolean;
+  lastTime: Date | null;
 }
 
 export interface PeerUser {
-  id: string
-  name: string
-  image: string
-  peerId: string
+  id: string;
+  name: string;
+  image: string;
+  peerId: string;
 }
 
 export interface User {
@@ -60,12 +68,10 @@ export interface Post {
   content: string;
   files: File[];
   userId: string;
-  postSharedOf: [Post]
+  postSharedOf: [Post];
   authorId: string;
-  activity: any
+  activity: any;
 }
-
-
 
 interface File {
   url: string;
@@ -91,28 +97,27 @@ export interface CommentInput {
   file: File;
   content: string;
   parentId: string;
-  replyUserId: string
+  replyUserId: string;
 }
 
 export interface Message {
-  content: string
-  files: File[]
-  updatedAt: String
-  createdAt: String
+  content: string;
+  files: File[];
+  updatedAt: String;
+  createdAt: String;
 }
 
 export interface MessageInput {
-  content: string
-  files: [File]
-  conversationId: string
-  toUserId?: string
+  content: string;
+  files: [File];
+  conversationId: string;
+  toUserId?: string;
 }
 
 export interface Conversation {
-  participants: User[]
-  messages: Message[]
+  participants: User[];
+  messages: Message[];
 }
-
 
 /**
  * Messages
@@ -123,7 +128,6 @@ export interface SendMessageArguments {
     conversationId: string;
     toUserId: string;
     content: string;
-    files: File[]
-  }
+    files: File[];
+  };
 }
-
