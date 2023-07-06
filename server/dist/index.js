@@ -18,7 +18,6 @@ import cors from "cors";
 import bodyParser from "body-parser";
 import { PubSub } from "graphql-subscriptions";
 import { Server } from "socket.io";
-import axios from "axios";
 let users = [];
 const main = async () => {
   dotenv.config();
@@ -62,7 +61,9 @@ const main = async () => {
       socket.to(receiverId).emit("receive_message", {
         sender: {
           ...sender,
+          // @ts-ignore
           isOnline: users.find((u) => u.userId === sender.id).isOnline,
+          // @ts-ignore
           lastTime: users.find((u) => u.userId === sender.id).lastTime,
         },
         message,
@@ -162,10 +163,20 @@ const main = async () => {
     bodyParser.json(),
     expressMiddleware(server, {
       context: async ({ req }) => {
-        const res = await axios.get(`${process.env.BASE_URL}/api/auth/session`);
-        console.log("res", res);
-        console.log("req", req);
-        return { session: res.data, prisma, pubsub };
+        console.log("req", req.headers.authorization);
+        const user = await prisma.user.findUnique({
+          where: {
+            id: req.headers.authorization,
+          },
+        });
+        const session = {
+          user: user,
+        };
+        return {
+          session,
+          prisma,
+          pubsub,
+        };
       },
     })
   );

@@ -85,8 +85,10 @@ const main = async () => {
         socket.to(receiverId).emit("receive_message", {
           sender: {
             ...sender,
-            isOnline: users.find((u) => u.userId === sender.id)?.isOnline,
-            lastTime: users.find((u) => u.userId === sender.id)?.lastTime,
+            // @ts-ignore
+            isOnline: users.find((u) => u.userId === sender.id).isOnline,
+            // @ts-ignore
+            lastTime: users.find((u) => u.userId === sender.id).lastTime,
           },
           message,
         });
@@ -220,10 +222,20 @@ const main = async () => {
     bodyParser.json(),
     expressMiddleware(server, {
       context: async ({ req }): Promise<GraphQLContext> => {
-        const res = await axios.get(`${process.env.BASE_URL}/api/auth/session`);
-        console.log("res", res);
-        console.log("req", req);
-        return { session: res.data as Session, prisma, pubsub };
+        console.log("req", req.headers.authorization);
+        const user = await prisma.user.findUnique({
+          where: {
+            id: req.headers.authorization,
+          },
+        });
+        const session: Session = {
+          user: user as any,
+        };
+        return {
+          session,
+          prisma,
+          pubsub,
+        };
       },
     })
   );
