@@ -321,23 +321,23 @@ const Post: NextPage<PostProps> = ({
                 </span>
             </div>
 
-            <div className="h-h-auto">
+            <div className="h-auto">
                 {activity === 'UPDATE_AVATAR' && (
-                    <div className="relative w-full lg:h-[90%] h-[10rem]">
-                        <div className="h-full w-full">
+                    <div className="relative w-full lg:h-[25rem] h-[10rem]">
+                        <div className="h-1/2 w-full">
                             {author.background ? (
                                 <Image
                                     src={author.background}
                                     width={1000}
                                     height={1000}
                                     alt=""
-                                    className="h-1/2 w-full object-cover"
+                                    className="h-1/2 w-full object-contain"
                                 />
                             ) : (
                                 <div className="h-1/2 w-full bg-gradient-to-t from-gray-200 to-light"></div>
                             )}
                         </div>
-                        <div className="absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] border-white border-[5px] overflow-hidden rounded-full lg:w-[30rem] w-[11rem] h-[11rem] lg:h-[20rem]">
+                        <div className="absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] border-white border-[5px] overflow-hidden rounded-full lg:w-[20rem] w-[11rem] h-1/2 lg:h-[20rem]">
                             <Link
                                 href={`/post/${postId}`}
                                 className="w-full h-full">
@@ -346,7 +346,7 @@ const Post: NextPage<PostProps> = ({
                                     width={1000}
                                     height={1000}
                                     alt=""
-                                    className="w-full h-full object-fill"
+                                    className="w-full h-full object-cover"
                                 />
                             </Link>
                         </div>

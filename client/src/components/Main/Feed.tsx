@@ -46,7 +46,7 @@ const Feed = () => {
             <div className="flex space-x-4 items-center">
                 {!user?.image ?
               <div  className="w-10 h-10 rounded-full bg-secondary">
-              </div>    
+              </div>
             :
                 <Image
                     width={100}

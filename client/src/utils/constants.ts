@@ -14,14 +14,15 @@ export const uploadMultiple = async (files: any[]) => {
         formData.append('file', file);
         formData.append('upload_preset', 'my-uploads');
         const { data } = await axios.post(
-            `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUDNAME
+            `https://api.cloudinary.com/v1_1/${
+                process.env.NEXT_PUBLIC_CLOUDINARY_CLOUDNAME
             }/${file.type.includes('video') ? 'video' : 'image'}/upload`,
             formData
         );
         return {
             url: data.url,
             type: file.type,
-            publicId: data.public_id,
+            publicId: data.public_id.replace('my-uploads/', ''),
         };
     });
     return await Promise.all(promises);
@@ -29,7 +30,9 @@ export const uploadMultiple = async (files: any[]) => {
 
 export const destroyMultiple = async (files: File[]) => {
     const results = files.map(async (file) => {
-        const result = await axios.post(`/api/destroy/${file.publicId}`);
+        const result = await axios.post(
+            `/api/destroy/${file.publicId.replace('my-uploads/', '')}`
+        );
         return {
             result,
         };
@@ -39,14 +42,14 @@ export const destroyMultiple = async (files: File[]) => {
 };
 
 export const destroySingle = async (file: File) => {
-    const result = await axios.post(`/api/destroy${file.publicId}`)
-    return result
-}
+    const result = await axios.post(`/api/destroy${file.publicId}`);
+    return result;
+};
 
 export const invalidAction = () => {
-    toast.error("Invalid action")
-}
+    toast.error('Invalid action');
+};
 
-export const sleep = (cb: any = 3000 ,ms: number) => {
-    setTimeout(() => cb(),ms)
-}
+export const sleep = (cb: any = 3000, ms: number) => {
+    setTimeout(() => cb(), ms);
+};

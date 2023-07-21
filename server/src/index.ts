@@ -6,9 +6,6 @@ import { ApolloServer } from "@apollo/server";
 import { expressMiddleware } from "@apollo/server/express4";
 import express from "express";
 import { createServer } from "http";
-import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHttpServer";
-import { WebSocketServer } from "ws";
-import { useServer } from "graphql-ws/lib/use/ws";
 // @ts-ignore
 import resolvers from "./graphql/resolvers/index.ts";
 // @ts-ignore
@@ -19,14 +16,13 @@ import type {
   PeerUser,
   Session,
   SocketUser,
-  SubscriptionContext,
 } from "./utils/types.ts";
 import * as dotenv from "dotenv";
 import cors from "cors";
 import bodyParser from "body-parser";
 import { PubSub } from "graphql-subscriptions";
 import { Server, Socket } from "socket.io";
-import axios from "axios";
+import { getSession } from "next-auth/react";
 
 let users: SocketUser[] = [];
 
@@ -154,60 +150,15 @@ const main = async () => {
     });
   });
 
-  const wsServer = new WebSocketServer({
-    server: httpServer,
-    path: "/graphql/subscriptions",
-  });
-
   // Context parameters
   const prisma = new PrismaClient();
   const pubsub = new PubSub();
-
-  const getSubscriptionContext = async (
-    ctx: SubscriptionContext
-  ): Promise<GraphQLContext> => {
-    ctx;
-    // ctx is the graphql-ws Context where connectionParams live
-    if (ctx.connectionParams && ctx.connectionParams.session) {
-      const { session } = ctx.connectionParams;
-      return { session, prisma, pubsub };
-    }
-    // Otherwise let our resolvers know we don't have a current user
-    return { session: null, prisma, pubsub };
-  };
-
-  const serverCleanup = useServer(
-    {
-      schema,
-      context: (ctx: SubscriptionContext) => {
-        // This will be run every time the client sends a subscription request
-        // Returning an object will add that information to our
-        // GraphQL context, which all of our resolvers have access to.
-        return getSubscriptionContext(ctx);
-      },
-    },
-    wsServer
-  );
 
   // Set up ApolloServer.
   const server = new ApolloServer({
     schema,
     csrfPrevention: true,
-    plugins: [
-      // Proper shutdown for the HTTP server.
-      ApolloServerPluginDrainHttpServer({ httpServer }),
-
-      // Proper shutdown for the WebSocket server.
-      {
-        async serverWillStart() {
-          return {
-            async drainServer() {
-              await serverCleanup.dispose();
-            },
-          };
-        },
-      },
-    ],
+    plugins: [],
   });
   await server.start();
 
@@ -222,19 +173,10 @@ const main = async () => {
     bodyParser.json(),
     expressMiddleware(server, {
       context: async ({ req }): Promise<GraphQLContext> => {
-        console.log("req", req.headers.authorization);
-        const user = await prisma.user.findUnique({
-          where: {
-            id: req.headers.authorization,
-          },
-        });
-        const session: Session = {
-          user: user as any,
-        };
+        const session = await getSession({ req });
         return {
-          session,
+          session: session as Session,
           prisma,
-          pubsub,
         };
       },
     })
